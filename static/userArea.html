@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>JWT</title>
+    <link rel="icon" href="img/icoVallauri.png" type="image/png" />
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="index.css">
+    <script type="text/javascript" src="js/libreria.js"></script>
+    <!--Per la mappa-->
+    <link href="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@2.4.0/dist/maplibre-gl.js"></script>
+    <script type="text/javascript" src="js/mappa.js"></script>
+    <!--Per le animazioni-->
+    <script type="text/javascript" src="js/graphicEffects.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</head>
+
+<body>
+    <!--Navbar-->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="btnFilter" role="button" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Employee Filter
+                    </a>
+                    <div class="dropdown-menu" id="operatorDropdown" aria-labelledby="btnFilter">
+                        <!-- Gli operatori saranno aggiunti dinamicamente -->
+                    </div>
+                </li>
+            </ul>
+            <button type="button" class="btn btn-success mr-3" id="btnNewOperator"
+                onclick="window.location.href='newOperator.html'">New Operator</button>
+            <button type="button" class="btn btn-danger" id="btnLogout">Logout</button>
+            <span id="usernameDisplay" class="navbar-text text-white ml-3"></span>
+        </div>
+    </nav>
+
+    <!--Home-->
+    <div id="home" style="display: flex; flex-direction: column; align-items: center;">
+        <!-- Mappa -->
+        <div id="map" style=" border: 1px solid #ccc; margin-bottom: 20px; margin-left: 0;"></div>
+
+        <!-- Tabella delle perizie -->
+        <div id="tableContainer" style="width: 100%; padding-left: 10px;">
+            <h3>Elenco Perizie</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Operatore</th>
+                        <th>Data</th>
+                        <th>Descrizione</th>
+                        <th>Coordinate</th>
+                        <th>Commento</th>
+                    </tr>
+                </thead>
+                <tbody id="perizieTableBody">
+                    <!-- Le righe della tabella saranno aggiunte dinamicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="perizia" style="display: none;">
+        <div id="dettagliPerizia">
+            <h1>Dettagli perizia</h1>
+            <img src="" alt="Immagine perizia" style="width: 100%; max-width: 300px;">
+            <h3>Nome Operatore</h3>
+            <br>
+            <h3><b>DataOra: </b></h3>
+            <h4></h4>
+            <br>
+            <h3><b>Indirizzo: </b></h3>
+            <h4></h4>
+            <br>
+            <h3><b>Descrizione</b></h3>
+            <div class="form-group">
+                <textarea class="form-control" rows="6" readonly></textarea>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

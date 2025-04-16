@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Crea Nuovo Operatore</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <script type="text/javascript" src="js/newOperator.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h3>Crea Nuovo Operatore</h3>
+        <form id="formNewOperator">
+            <div class="form-group">
+                <label for="operatorName">Nome Operatore</label>
+                <input type="text" class="form-control" id="operatorName" placeholder="Inserisci nome e cognome" required>
+            </div>
+            <div class="form-group">
+                <label for="operatorEmail">Email Operatore</label>
+                <input type="email" class="form-control" id="operatorEmail" placeholder="Inserisci l'email" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Crea Operatore</button>
+        </form>
+        <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
+            Operatore creato con successo! La password è stata inviata via email.
+        </div>
+        <a href="userArea.html" class="btn btn-secondary mt-3">Torna alla User Area</a>
+    </div>
+</body>
+</html>
