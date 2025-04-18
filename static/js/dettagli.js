@@ -13,6 +13,9 @@ $(document).ready(function () {
         return;
     }
 
+    let idPerizia = id; // già ottenuto dai parametri URL
+    let periziaCorrente = null;
+
     // Effettua una richiesta per ottenere i dettagli della perizia
     const periziaRequest = inviaRichiesta("GET", `/api/perizie/${id}`);
     const operatoriRequest = inviaRichiesta("GET", `/api/operatori`);
@@ -30,6 +33,7 @@ $(document).ready(function () {
     // Gestisci il completamento delle richieste
     $.when(periziaRequest, operatoriRequest).done((periziaResponse, operatoriResponse) => {
         const perizia = periziaResponse[0]; // Risultato della prima richiesta
+        periziaCorrente = perizia; // Salva perizia corrente per il salvataggio
         const operatori = operatoriResponse[0]; // Risultato della seconda richiesta
 
         // Trova l'operatore corrispondente al codice
@@ -48,7 +52,7 @@ $(document).ready(function () {
                     <div class="carousel-item${idx === 0 ? " active" : ""}">
                         <img src="${f.img}" class="d-block w-100" alt="Foto perizia" style="max-width:300px; margin:auto; border-radius:10px;">
                         <div class="carousel-caption d-none d-md-block">
-                            <p>${f.commento || ""}</p>
+                            <p contenteditable="true" data-idx="${idx}">${f.commento || ""}</p>
                         </div>
                     </div>
                 `);
@@ -81,7 +85,50 @@ $(document).ready(function () {
             $("#indirizzo").html(`<span class="bold">Indirizzo:</span> Non disponibile`);
         }
 
-        $("#descrizione").html(`<span class="bold">Descrizione:</span> ${perizia.descrizione || "N/A"}`);
+        $("#descrizione").text(perizia.descrizione || "N/A");
+    });
+
+    // Disabilita il pulsante all'avvio
+    $("#btnSalvaModifiche").prop("disabled", true);
+
+    // Funzione per abilitare il pulsante se c'è una modifica
+    function abilitaSalva() {
+        $("#btnSalvaModifiche").prop("disabled", false);
+    }
+
+    // Ascolta modifiche sulla descrizione
+    $("#descrizione").on("input", abilitaSalva);
+
+    // Ascolta modifiche sui commenti delle immagini
+    $(document).on("input", "#carouselFoto .carousel-caption p", abilitaSalva);
+
+    // Salva modifiche
+    $("#btnSalvaModifiche").on("click", function () {
+        // Prendi la descrizione aggiornata
+        const nuovaDescrizione = $("#descrizione").text().trim();
+
+        // Prendi i commenti aggiornati
+        let nuoveFoto = [];
+        $("#carouselFoto .carousel-caption p").each(function (idx, el) {
+            nuoveFoto.push({
+                img: periziaCorrente.foto[idx].img,
+                commento: $(el).text()
+            });
+        });
+
+        // Invia la richiesta di aggiornamento
+        inviaRichiesta("POST", "/api/aggiornaPerizia", {
+            id: idPerizia,
+            descrizione: nuovaDescrizione,
+            foto: JSON.stringify(nuoveFoto)
+        })
+        .done(function () {
+            alert("Modifiche salvate con successo!");
+            $("#btnSalvaModifiche").prop("disabled", true); // Disabilita di nuovo il pulsante
+        })
+        .fail(function () {
+            alert("Errore nel salvataggio delle modifiche.");
+        });
     });
 });
 

@@ -36,9 +36,14 @@ $(document).ready(function () {
       });
       request.fail(function (jqXHR, test_status, str_error) {
         if (jqXHR.status == 401) {
-          // unauthorized
-          _lblErrore.show();
+          _lblErrore.text("Credenziali non valide").show();
+        } else if (jqXHR.status == 403) {
+          _lblErrore.text("Solo l'amministratore può accedere a questa area.").show();
         } else errore(jqXHR, test_status, str_error);
+        // Pulisci eventuali token
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
+        document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
       });
       request.done(function (data, test_status, jqXHR) {
         const token = jqXHR.getResponseHeader("Authorization").split(" ")[1];
@@ -100,4 +105,9 @@ $(document).ready(function () {
   });
 
   //global google
+
+  // Esempio: se usi localStorage/sessionStorage
+  localStorage.removeItem("token");
+  sessionStorage.removeItem("token");
+  document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 });

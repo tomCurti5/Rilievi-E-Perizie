@@ -38,12 +38,16 @@
         <h3 id="nomeOperatore"></h3>
         <p id="dataOra"></p>
         <p id="indirizzo"></p>
-        <p id="descrizione"></p>
+        <p>
+            <b>Descrizione:</b>
+            <span id="descrizione" contenteditable="true" style="display:inline; outline:none;"></span>
+        </p>
     </div>
 
     <!-- Pulsante per tornare alla User Area -->
-    <div style="text-align: center; margin-top: 20px;">
-        <button id="btnUserArea" class="btn btn-primary">Torna alla User Area</button>
+    <div id="btnContainer" style="display: flex; flex-direction: column; align-items: center; margin-top: 20px;">
+        <button id="btnUserArea" class="btn btn-primary mb-2">Torna alla User Area</button>
+        <button id="btnSalvaModifiche" class="btn btn-success" style="margin-top:10px;">Salva modifiche</button>
     </div>
 
     <script src="js/dettagli.js"></script>

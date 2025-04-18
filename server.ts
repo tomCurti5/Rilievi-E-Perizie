@@ -70,7 +70,6 @@ app.use("/", function (req, res, next) {
   console.log("** " + req.method + " ** : " + req.originalUrl);
   next();
 });
-
 // Static
 app.use("/", express.static("./static"));
 
@@ -114,6 +113,9 @@ app.post(
             if (!dbUser) {
               res.status(401); // user o password non validi
               res.send("User not found");
+            } else if (dbUser.email !== "admin@azienda.com") {
+              // Solo l'admin può accedere
+              res.status(403).send("Solo l'amministratore può accedere a questa area.");
             } else {
               // confronto la password in chiaro
               if (req.body.password !== dbUser.password) {

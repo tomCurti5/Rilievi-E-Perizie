@@ -363,3 +363,31 @@ iconify-icon {
     color: #fff !important;
 }
 
+#btnSalvaModifiche:disabled {
+    background-color: #ccc !important;
+    border-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed;
+}
+
+#descrizione[contenteditable="true"] {
+    background: transparent;
+    color: inherit;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    min-width: 2em;
+    outline: none;
+    font-size: 1rem;
+    white-space: pre-line;
+    display: inline;
+}
+
+#descrizione[contenteditable="true"]:focus {
+    outline: 2px solid #184a7e;
+    box-shadow: 0 0 4px #184a7e;
+    background: #f0f8ff;
+    border-radius: 4px;
+}
+
