@@ -123,7 +123,13 @@ $(document).ready(function () {
             foto: JSON.stringify(nuoveFoto)
         })
         .done(function () {
-            alert("Modifiche salvate con successo!");
+            Swal.fire({
+                icon: 'success',
+                title: 'Salvataggio riuscito!',
+                text: 'Modifiche salvate con successo.',
+                timer: 1500,
+                showConfirmButton: false
+            });
             $("#btnSalvaModifiche").prop("disabled", true); // Disabilita di nuovo il pulsante
         })
         .fail(function () {

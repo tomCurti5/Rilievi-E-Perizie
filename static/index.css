@@ -13,7 +13,9 @@ body {
   /* margin-left: 0 !important; */
   margin: 0 auto !important;
   border-radius: 15px 15px;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #perizia {
@@ -194,6 +196,11 @@ iconify-icon {
   margin-top: 20px;
   padding-left: 10px;
   padding-right: 10px; /* aggiungi questa riga */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh; /* o quanto vuoi */
 }
 
 #tableContainer h3 {
@@ -208,6 +215,8 @@ iconify-icon {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  font-size: 16px;
 }
 
 .table th {
@@ -397,5 +406,76 @@ iconify-icon {
     box-shadow: 0 0 4px #184a7e;
     background: #f0f8ff;
     border-radius: 4px;
+}
+
+/* index.css */
+#card, .container, #tableContainer {
+    max-width: 95vw;
+    box-sizing: border-box;
+}
+
+@media (max-width: 850px) {
+    .dettagli-box, #card, .container, #tableContainer {
+        width: 98vw !important;
+        padding: 10px !important;
+        margin: 10px auto !important;
+    }
+    #map, #perizia {
+        width: 100% !important;
+        margin: 0 !important;
+    }
+    .dettagli-box img, .carousel-item img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+    .carousel-caption {
+        max-width: 100vw !important;
+    }
+    #btnContainer {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .table {
+        font-size: 14px;
+    }
+    #map, #tableContainer {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+}
+
+/* index.css */
+.table {
+    width: 100%;
+    font-size: 16px;
+}
+@media (max-width: 600px) {
+    .table th, .table td {
+        font-size: 12px;
+        padding: 4px;
+    }
+    #btnUserArea, #btnSalvaModifiche, .btn {
+        width: 100%;
+        font-size: 1em;
+        margin-bottom: 10px;
+    }
+}
+
+/* index.css */
+#formNewOperator input,
+#formNewOperator .form-control {
+    width: 100%;
+    min-width: 0;
+    font-size: 1em;
+}
+
+/* index.css */
+.carousel-item img {
+    max-width: 100vw;
+    height: auto;
 }
 

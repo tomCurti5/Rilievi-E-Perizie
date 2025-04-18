@@ -4,6 +4,10 @@ body {
 	background-size: cover;
 	background-position: center;
 	background-attachment: fixed;
+	min-height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .titolo{
@@ -128,11 +132,12 @@ body {
 
 #card{
 	width: 30%;
-	margin: 10% auto;
-
+	min-width: 260px;
+	max-width: 400px;
+	margin: 5% auto;
+	padding: 30px 0;
 	background: #D9D9D9;
 	border-radius: 15px;
-	padding: 30px 0;
 }
 
 #logo{
@@ -147,33 +152,31 @@ input{
 	display: block;
 	margin: 25px auto;
 	background: #FFFFFF;
-		opacity: 0.6;
-		box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
-		border-radius: 10px;
-		border: none;
-		width:60%;
-		height: 40px;
-		padding-left: 8px;
-		font-size: 16pt;
+	opacity: 0.6;
+	box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+	border-radius: 10px;
+	border: none;
+	width:60%;
+	height: 40px;
+	padding-left: 8px;
+	font-size: 16pt;
 }
 
 #btnLogin{
 	display: block;
 	margin: 25px auto;
-		margin-top: 40px;
+	margin-top: 40px;
 	box-sizing: border-box;
-	
-	
-		background: #000000;
-		opacity: 0.6;
-		box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
-		border-radius: 10px;
-		color: white;
-		font-size: 20pt;
-		font-weight: bold;
-		width: 60%;
-		height: 4%;
-		border:none;
+	background: #000000;
+	opacity: 0.6;
+	box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+	border-radius: 10px;
+	color: white;
+	font-size: 20pt;
+	font-weight: bold;
+	width: 60%;
+	height: 4%;
+	border:none;
 }
 
 hr{
@@ -184,24 +187,27 @@ hr{
 #google-signin-button{
 	display: inline-block;
 	margin: 25px auto;
-		background-color: #D9D9D9;
+	background-color: #D9D9D9;
 	margin-left: 28%;
 }
 
 @media screen and (max-width: 850px) {
 	#card{
 		width: 90%;
+		min-width: unset;
+		padding: 15px 0;
 	}
-	input{
-		width: 80%;
+	input, #btnLogin {
+		width: 90% !important;
+		font-size: 1em;
 	}
-	#btnLogin{
-		width: 80%;
+	#logo {
+		width: 100px;
+		height: 100px;
 	}
 	#google-signin-button{
 		margin-left: 17%;
 	}
-
 }
 
 .bold {
