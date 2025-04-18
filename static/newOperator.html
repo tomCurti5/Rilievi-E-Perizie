@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="index.css">
     <script type="text/javascript" src="js/newOperator.js"></script>
 </head>
@@ -22,12 +23,12 @@
                 <label for="operatorEmail">Email Operatore</label>
                 <input type="email" class="form-control" id="operatorEmail" placeholder="Inserisci l'email" required>
             </div>
-            <button type="submit" class="btn btn-primary">Crea Operatore</button>
+            <button type="submit" class="btn btn-success" id="btnCreaOperatore" disabled>Crea Operatore</button>
         </form>
         <div id="successMessage" class="alert alert-success mt-3" style="display: none;">
             Operatore creato con successo! La password è stata inviata via email.
         </div>
-        <a href="userArea.html" class="btn btn-secondary mt-3">Torna alla User Area</a>
+        <a href="userArea.html" class="btn btn-primary mt-3">Torna alla User Area</a>
     </div>
 </body>
 </html>

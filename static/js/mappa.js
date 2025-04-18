@@ -23,8 +23,17 @@ function popolaMappa(perizie) {
     color: "darkblue", // Colore blu scuro per il marker della sede centrale
   })
     .setLngLat([sedeCentrale.longitude, sedeCentrale.latitude]) // Coordinate della sede centrale
-    .setPopup(new maplibregl.Popup().setText("Sede Centrale - Genola")) // Popup con descrizione
+    .setPopup(new maplibregl.Popup().setText("Ufficio - Sede centrale")) // Popup con descrizione
     .addTo(map);
+
+  // Mostra popup "Ufficio" al click sul marker della sede centrale
+  const sedeElement = sedeMarker.getElement();
+  sedeElement.style.cursor = "pointer"; // <-- aggiungi questa riga
+  sedeElement.addEventListener("click", () => {
+    new maplibregl.Popup()
+      .setLngLat([sedeCentrale.longitude, sedeCentrale.latitude])
+      .addTo(map);
+  });
 
   // Aggiungi marker per ogni perizia
   for (const perizia of perizie) {
@@ -36,11 +45,6 @@ function popolaMappa(perizie) {
     const markerElement = marker.getElement();
     markerElement.style.cursor = "pointer";
 
-    // Aggiungi un popup al marker
-    const popup = new maplibregl.Popup({ offset: 25 }).setText(
-        `Descrizione: ${perizia.descrizione}`
-    );
-    marker.setPopup(popup);
 
     // Aggiungi evento click sul marker
     markerElement.addEventListener("click", () => {

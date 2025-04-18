@@ -169,6 +169,10 @@ iconify-icon {
 	margin-left: 28%;
 }
 
+#google-signin-button, #btnLoginGoogle {
+    display: none !important;
+}
+
 @media screen and (max-width: 850px) {
 	#card{
 		width: 90%;
@@ -356,14 +360,18 @@ iconify-icon {
 }
 
 #formNewOperator label,
-#formNewOperator input,
-#formNewOperator .form-control,
-#formNewOperator .btn,
-#formNewOperator {
+#formNewOperator .btn {
     color: #fff !important;
 }
 
 #btnSalvaModifiche:disabled {
+    background-color: #ccc !important;
+    border-color: #ccc !important;
+    color: #666 !important;
+    cursor: not-allowed;
+}
+
+#btnCreaOperatore:disabled {
     background-color: #ccc !important;
     border-color: #ccc !important;
     color: #666 !important;

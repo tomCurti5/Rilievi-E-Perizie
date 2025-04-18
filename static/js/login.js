@@ -49,11 +49,15 @@ $(document).ready(function () {
         const token = jqXHR.getResponseHeader("Authorization").split(" ")[1];
         localStorage.setItem("authToken", token); // Salva il token in localStorage
 
-        if (_username.val() != "admin@gmail.com") {
-          window.location.href = "userArea.html";
-        } else {
-          window.location.href = "index.html";
-        }
+        Swal.fire({
+          icon: 'success',
+          title: 'Login effettuato!',
+          text: 'Benvenuto!',
+          showConfirmButton: false,
+          timer: 1500
+        }).then(() => {
+            window.location.href = "userArea.html";
+        });
       });
     }
   }
@@ -63,46 +67,46 @@ $(document).ready(function () {
   });
 
   //google login
-  $("#btnLoginGoogle").on("click", function () {
-    google.accounts.id.initialize({
-      client_id:
-        "193434866513-h3mgiuvjpv0s3u1711q545sjahdp7t4r.apps.googleusercontent.com",
-      callback: function (response) {
-        if (response.credential != "") {
-          //console.log(response.credential);
-          $("#google-signin-button").hide();
-          let request = inviaRichiesta("POST", "/api/googleLogin", {
-            token: response.credential,
-          });
-          request.fail(function (jqXHR, test_status, str_error) {
-            if (jqXHR.status == 401) {
-              alert(
-                "Non sei autorizzato ad accedere, contatta l'amministratore"
-              );
-            } else errore(jqXHR, test_status, str_error);
-          });
-          request.done(function (data, test_status, jqXHR) {
-            console.log(jqXHR.getResponseHeader("Authorization")); //prendiamo il token
-            window.location.href = "index.html";
-          });
-        }
-      },
-    });
+  // $("#btnLoginGoogle").on("click", function () {
+  //   google.accounts.id.initialize({
+  //     client_id:
+  //       "193434866513-h3mgiuvjpv0s3u1711q545sjahdp7t4r.apps.googleusercontent.com",
+  //     callback: function (response) {
+  //       if (response.credential != "") {
+  //         //console.log(response.credential);
+  //         $("#google-signin-button").hide();
+  //         let request = inviaRichiesta("POST", "/api/googleLogin", {
+  //           token: response.credential,
+  //         });
+  //         request.fail(function (jqXHR, test_status, str_error) {
+  //           if (jqXHR.status == 401) {
+  //             alert(
+  //               "Non sei autorizzato ad accedere, contatta l'amministratore"
+  //             );
+  //           } else errore(jqXHR, test_status, str_error);
+  //         });
+  //         request.done(function (data, test_status, jqXHR) {
+  //           console.log(jqXHR.getResponseHeader("Authorization")); //prendiamo il token
+  //           window.location.href = "index.html";
+  //         });
+  //       }
+  //     },
+  //   });
 
-    google.accounts.id.renderButton(
-      document.getElementById("google-signin-button"),
-      {
-        theme: "outline",
-        size: "large",
-        type: "standard",
-        text: "continue_with",
-        shape: "rectangular",
-        logo_alignment: "center",
-      }
-    );
+  //   google.accounts.id.renderButton(
+  //     document.getElementById("google-signin-button"),
+  //     {
+  //       theme: "outline",
+  //       size: "large",
+  //       type: "standard",
+  //       text: "continue_with",
+  //       shape: "rectangular",
+  //       logo_alignment: "center",
+  //     }
+  //   );
 
-    google.accounts.id.prompt();
-  });
+  //   google.accounts.id.prompt();
+  // });
 
   //global google
 
