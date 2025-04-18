@@ -40,7 +40,30 @@ $(document).ready(function () {
         nomeOperatore = nomeOperatore.replace(/([a-z])([A-Z])/g, "$1 $2");
 
         // Aggiorna i dettagli nella pagina utilizzando jQuery
-        $("#fotoPerizia").attr("src", perizia.foto && perizia.foto[0]?.img || "https://via.placeholder.com/150");
+        const carouselInner = $("#carouselFoto .carousel-inner");
+        carouselInner.empty();
+        if (perizia.foto && perizia.foto.length > 0) {
+            perizia.foto.forEach((f, idx) => {
+                carouselInner.append(`
+                    <div class="carousel-item${idx === 0 ? " active" : ""}">
+                        <img src="${f.img}" class="d-block w-100" alt="Foto perizia" style="max-width:300px; margin:auto; border-radius:10px;">
+                        <div class="carousel-caption d-none d-md-block">
+                            <p>${f.commento || ""}</p>
+                        </div>
+                    </div>
+                `);
+            });
+        } else {
+            carouselInner.append(`
+                <div class="carousel-item active">
+                    <img src="https://via.placeholder.com/300x200" class="d-block w-100" alt="Nessuna foto">
+                </div>
+            `);
+        }
+
+        // ...dopo aver aggiunto tutte le .carousel-item...
+        $("#carouselFoto").carousel(0);
+
         $("#nomeOperatore").html(`<span class="bold">Operatore:</span> ${nomeOperatore}`);
         $("#dataOra").html(`<span class="bold">Data e Ora:</span> ${new Date(perizia["data-ora"]).toLocaleString()}`);
 

@@ -57,14 +57,14 @@ function documentReady() {
       $("#lblSuccess").show();
     });
   });
-  
+
   // Logout
   $("#btnLogout").on("click", function () {
     localStorage.removeItem("authToken");
     sessionStorage.removeItem("authToken");
     window.location.href = "/login.html";
   });
-/**** carousel management *****/
+  /**** carousel management *****/
   $(".carousel-control-prev").on("click", function () {
     commenti.vetCommenti[commenti.index] = $(
       "#exampleFormControlTextarea2"
@@ -120,44 +120,44 @@ function documentReady() {
 
 // Funzione per popolare la tendina degli operatori
 function popolaDropdownOperatori(operatori, perizie) {
-    const dropdown = $("#operatorDropdown");
-    const filterButton = $("#btnFilter"); // Bottone principale del filtro
-    dropdown.empty(); // Svuota la tendina
+  const dropdown = $("#operatorDropdown");
+  const filterButton = $("#btnFilter"); // Bottone principale del filtro
+  dropdown.empty(); // Svuota la tendina
 
-    // Aggiungi l'opzione "Tutti"
-    const allOption = $("<a>")
-        .addClass("dropdown-item")
-        .text("Tutti")
-        .css("cursor", "pointer") // Imposta il cursore come pointer
-        .on("click", function () {
-            filterButton.text("Employee Filter"); // Ripristina il testo del bottone
-            popolaMappa(perizie); // Mostra tutte le perizie sulla mappa
-            popolaTabella(perizie, operatori); // Mostra tutte le perizie nella tabella
-        });
-    dropdown.append(allOption);
+  // Aggiungi l'opzione "Tutti"
+  const allOption = $("<a>")
+    .addClass("dropdown-item")
+    .text("Tutti")
+    .css("cursor", "pointer") // Imposta il cursore come pointer
+    .on("click", function () {
+      filterButton.text("Employee Filter"); // Ripristina il testo del bottone
+      popolaMappa(perizie); // Mostra tutte le perizie sulla mappa
+      popolaTabella(perizie, operatori); // Mostra tutte le perizie nella tabella
+    });
+  dropdown.append(allOption);
 
-    // Aggiungi un'opzione per ogni operatore (escludendo "Admin")
-    for (const operatore of operatori) {
-        if (operatore.username === "Admin") continue; // Salta l'operatore Admin
+  // Aggiungi un'opzione per ogni operatore (escludendo "Admin")
+  for (const operatore of operatori) {
+    if (operatore.username === "Admin") continue; // Salta l'operatore Admin
 
-        const operatoreNome = operatore.username.replace(/([a-z])([A-Z])/g, "$1 $2"); // Separa nome e cognome
-        const option = $("<a>")
-            .addClass("dropdown-item")
-            .text(operatoreNome)
-            .css("cursor", "pointer") // Imposta il cursore come pointer
-            .on("click", function () {
-                // Cambia il testo del bottone con il nome dell'operatore selezionato
-                filterButton.text(operatoreNome);
+    const operatoreNome = operatore.username.replace(/([a-z])([A-Z])/g, "$1 $2"); // Separa nome e cognome
+    const option = $("<a>")
+      .addClass("dropdown-item")
+      .text(operatoreNome)
+      .css("cursor", "pointer") // Imposta il cursore come pointer
+      .on("click", function () {
+        // Cambia il testo del bottone con il nome dell'operatore selezionato
+        filterButton.text(operatoreNome);
 
-                // Filtra le perizie per l'operatore selezionato
-                const perizieFiltrate = perizie.filter(perizia => perizia.codOperatore === operatore._id.$oid || perizia.codOperatore === operatore._id);
+        // Filtra le perizie per l'operatore selezionato
+        const perizieFiltrate = perizie.filter(perizia => perizia.codOperatore === operatore._id.$oid || perizia.codOperatore === operatore._id);
 
-                // Aggiorna la mappa e la tabella con le perizie filtrate
-                popolaMappa(perizieFiltrate);
-                popolaTabella(perizieFiltrate, operatori);
-            });
-        dropdown.append(option);
-    }
+        // Aggiorna la mappa e la tabella con le perizie filtrate
+        popolaMappa(perizieFiltrate);
+        popolaTabella(perizieFiltrate, operatori);
+      });
+    dropdown.append(option);
+  }
 }
 
 function popolaPerizia(perizia) {
@@ -258,42 +258,49 @@ function popolaOperatori(operatori) {
 }
 
 function popolaTabella(perizie, operatori) {
-  const tableBody = $("#perizieTableBody");
-  tableBody.empty(); // Svuota la tabella prima di popolarla
+    const tableBody = $("#perizieTableBody");
+    tableBody.empty(); // Svuota la tabella prima di popolarla
 
-  for (const perizia of perizie) {
-    const row = $("<tr>");
+    for (const perizia of perizie) {
+        const row = $("<tr>");
 
-    // Trova il nome dell'operatore corrispondente al codice
-    const operatore = operatori.find(op => op._id.$oid === perizia.codOperatore || op._id === perizia.codOperatore);
-    let operatoreNome = operatore ? operatore.username : "N/A";
+        // Trova il nome dell'operatore corrispondente al codice
+        const operatore = operatori.find(op => op._id.$oid === perizia.codOperatore || op._id === perizia.codOperatore);
+        let operatoreNome = operatore ? operatore.username : "N/A";
 
-    // Aggiungi uno spazio tra nome e cognome
-    operatoreNome = operatoreNome.replace(/([a-z])([A-Z])/g, "$1 $2");
+        // Aggiungi uno spazio tra nome e cognome
+        operatoreNome = operatoreNome.replace(/([a-z])([A-Z])/g, "$1 $2");
 
-    // Colonna Operatore
-    const operatoreCell = $("<td>").text(operatoreNome);
-    row.append(operatoreCell);
+        // Colonna Operatore
+        const operatoreCell = $("<td>").text(operatoreNome);
+        row.append(operatoreCell);
 
-    // Colonna Data
-    const date = new Date(perizia["data-ora"]);
-    const formattedDate = date.toLocaleDateString() + " " + date.toLocaleTimeString();
-    const dateCell = $("<td>").text(formattedDate);
-    row.append(dateCell);
+        // Colonna Data
+        const date = new Date(perizia["data-ora"]);
+        const formattedDate = date.toLocaleDateString() + " " + date.toLocaleTimeString();
+        const dateCell = $("<td>").text(formattedDate);
+        row.append(dateCell);
 
-    // Colonna Descrizione
-    const descriptionCell = $("<td>").text(perizia.descrizione || "N/A");
-    row.append(descriptionCell);
+        // Colonna Descrizione
+        const descriptionCell = $("<td>").text(perizia.descrizione || "N/A");
+        row.append(descriptionCell);
 
-    // Colonna Coordinate
-    const coordinates = `${perizia.coordinate.latitude}, ${perizia.coordinate.longitude}`;
-    const coordinatesCell = $("<td>").text(coordinates);
-    row.append(coordinatesCell);
+        // Colonna Coordinate
+        const coordinates = `${perizia.coordinate.latitude}, ${perizia.coordinate.longitude}`;
+        const coordinatesCell = $("<td>").text(coordinates);
+        row.append(coordinatesCell);
 
-    // Colonna Commento
-    const commentCell = $("<td>").text(perizia.foto && perizia.foto[0].commento ? perizia.foto[0].commento : "N/A");
-    row.append(commentCell);
+        // Colonna Commento
+        const commentCell = $("<td>").text(perizia.foto && perizia.foto[0].commento ? perizia.foto[0].commento : "N/A");
+        row.append(commentCell);
 
-    tableBody.append(row);
-  }
+        // Aggiungi evento onclick per reindirizzare alla pagina dei dettagli
+        row.on("click", function () {
+            const id = perizia._id.$oid || perizia._id; // Recupera l'ID della perizia
+            const url = `dettagli.html?id=${id}`; // Costruisce l'URL con il parametro ID
+            window.location.href = url; // Reindirizza alla pagina dei dettagli
+        });
+
+        tableBody.append(row);
+    }
 }

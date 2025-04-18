@@ -26,7 +26,15 @@
 <body>
     <div id="dettagliContainer" class="dettagli-box">
         <h1>Dettagli Perizia</h1>
-        <img id="fotoPerizia" src="" alt="Foto perizia" style="width: 100%; max-width: 300px; border-radius: 10px; margin-bottom: 20px;">
+        <div id="carouselFoto" class="carousel slide mb-3" data-ride="carousel" data-interval="false">
+            <div class="carousel-inner"></div>
+            <a class="carousel-control-prev" href="#carouselFoto" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </a>
+            <a class="carousel-control-next" href="#carouselFoto" role="button" data-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </a>
+        </div>
         <h3 id="nomeOperatore"></h3>
         <p id="dataOra"></p>
         <p id="indirizzo"></p>

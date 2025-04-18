@@ -42,7 +42,7 @@ const privateKey = fs.readFileSync("keys/privateKey.pem", "utf8");
 console.log("Private Key:", privateKey ? "Caricata correttamente" : "Errore nel caricamento");
 const certificate = fs.readFileSync("keys/certificate.crt", "utf8");
 const credentials = { key: privateKey, cert: certificate };
-const DURATA_TOKEN = 3600; 
+const DURATA_TOKEN = 3600;
 
 // ***************************** Avvio ****************************************
 const httpServer = http.createServer(app);
@@ -71,7 +71,7 @@ app.use("/", function (req, res, next) {
   next();
 });
 
-// 2 - risorse statiche
+// Static
 app.use("/", express.static("./static"));
 
 // 3 - lettura dei parametri post
@@ -258,9 +258,13 @@ app.use("/api/", function (req: any, res: any, next: NextFunction) {
 
 /* ********************* (Sezione 3) USER ROUTES  ************************** */
 
+app.get("/", (req, res) => {
+  res.redirect("/login.html");
+});
+
 app.get("/api/MAP_KEY", (req: any, res: Response, next: NextFunction) => {
   let mapKey = process.env.MAP_KEY
-  res.send({key:mapKey});
+  res.send({ key: mapKey });
 });
 
 app.get("/api/perizie", (req: any, res: Response, next: NextFunction) => {
