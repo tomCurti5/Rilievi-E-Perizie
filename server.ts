@@ -37,7 +37,7 @@ const corsOptions = {
   },
   credentials: true,
 };
-const HTTPS_PORT = 3001;
+const HTTPS_PORT = process.env.HTTPS_PORT || 3001;
 const privateKey = fs.readFileSync("keys/privateKey.pem", "utf8");
 console.log("Private Key:", privateKey ? "Caricata correttamente" : "Errore nel caricamento");
 const certificate = fs.readFileSync("keys/certificate.crt", "utf8");
