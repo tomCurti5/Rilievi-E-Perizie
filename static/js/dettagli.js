@@ -1,7 +1,7 @@
 $(document).ready(function () {
     // Aggiungi evento click al pulsante per tornare alla User Area
     $("#btnUserArea").click(function () {
-        window.location.href = "userarea.html"; // Modifica il percorso se necessario
+        window.location.href = "userArea.html"; // Modifica il percorso se necessario
     });
 
     // Recupera l'ID della perizia dai parametri dell'URL
