@@ -1,213 +1,283 @@
 body {
-	background-image: url("img/3408105.jpg");
-	background-repeat: no-repeat;
-	background-size: cover;
-	background-position: center;
-	background-attachment: fixed;
-	min-height: 100vh;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+    background-image: url("img/3408105.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.titolo{
-	font-size:15pt;
-	font-weight:bold;
-	margin-top:10px;
+.titolo {
+    font-size: 15pt;
+    font-weight: bold;
+    margin-top: 10px;
 }
 
-		
-.icona-rossa{
-	color: #dc3545;  
-	border:1px solid #dc3545; 
-	border-right:transparent;
+.icona-rossa {
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    border-right: transparent;
 }
 
 .login-block {
-	margin: 30px auto;
-	min-height: 93.6vh
+    margin: 30px auto;
+    min-height: 93.6vh;
 }
 
 .login-block .auth-box {
-	margin: 20px auto 0;
-	max-width: 450px !important
+    margin: 20px auto 0;
+    max-width: 450px !important;
 }
 
 .card {
-	border-radius: 5px;
-	-webkit-box-shadow: 0 0 5px 0 rgba(43, 43, 43, .1), 0 11px 6px -7px rgba(43, 43, 43, .1);
-	box-shadow: 0 0 5px 0 rgba(43, 43, 43, .1), 0 11px 6px -7px rgba(43, 43, 43, .1);
-	border: none;
-	margin-bottom: 30px;
-	-webkit-transition: all .3s ease-in-out;
-	transition: all .3s ease-in-out;
-	background-color: #fff;
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 5px 0 rgba(43, 43, 43, .1), 0 11px 6px -7px rgba(43, 43, 43, .1);
+    box-shadow: 0 0 5px 0 rgba(43, 43, 43, .1), 0 11px 6px -7px rgba(43, 43, 43, .1);
+    border: none;
+    margin-bottom: 30px;
+    -webkit-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+    background-color: #fff;
 }
 
 .card .card-block {
-	padding: 1.25rem
+    padding: 1.25rem;
 }
 
 .f-80 {
-	font-size: 80px
+    font-size: 80px;
 }
 
 .form-group {
-	margin-bottom: 1.25em
+    margin-bottom: 1.25em;
 }
 
 .form-material .form-control {
-	display: inline-block;
-	height: 43px;
-	width: 100%;
-	border: none;
-	border-radius: 0;
-	font-size: 16px;
-	font-weight: 400;
-	padding: 9px;
-	background-color: transparent;
-	-webkit-box-shadow: none;
-	box-shadow: none;
-	border-bottom: 1px solid #ccc
+    display: inline-block;
+    height: 43px;
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    font-size: 16px;
+    font-weight: 400;
+    padding: 9px;
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    border-bottom: 1px solid #ccc;
 }
 
 .btn-md {
-	padding: 10px 16px;
-	font-size: 15px;
-	line-height: 23px
+    padding: 10px 16px;
+    font-size: 15px;
+    line-height: 23px;
 }
 
 .btn-primary {
-	background-color: #4099ff;
-	border-color: #4099ff;
-	color: #fff;
-	cursor: pointer;
-	-webkit-transition: all ease-in .3s;
-	transition: all ease-in .3s
+    background-color: #4099ff;
+    border-color: #4099ff;
+    color: #fff;
+    cursor: pointer;
+    -webkit-transition: all ease-in .3s;
+    transition: all ease-in .3s;
 }
 
 .btn {
-	border-radius: 2px;
-	text-transform: capitalize;
-	font-size: 15px;
-	padding: 10px 19px;
-	cursor: pointer
+    border-radius: 2px;
+    text-transform: capitalize;
+    font-size: 15px;
+    padding: 10px 19px;
+    cursor: pointer;
 }
 
 .m-b-20 {
-	margin-bottom: 20px
+    margin-bottom: 20px;
 }
-
-.btn-md {
-	padding: 10px 16px;
-	font-size: 15px;
-	line-height: 23px
-}
-
 
 #infoMessage p {
-
-	color: red !important;
+    color: red !important;
 }
 
-
 .or-container {
-	align-items: center;
-	color: #ccc;
-	display: flex;
-	margin: 25px 0;
+    align-items: center;
+    color: #ccc;
+    display: flex;
+    margin: 25px 0;
 }
 
 .line-separator {
-	background-color: #ccc;
-	flex-grow: 5;
-	height: 1px;
+    background-color: #ccc;
+    flex-grow: 5;
+    height: 1px;
 }
 
 .or-label {
-	flex-grow: 1;
-	margin: 0 15px;
-	text-align: center;
+    flex-grow: 1;
+    margin: 0 15px;
+    text-align: center;
 }
 
-#card{
-	width: 30%;
-	min-width: 260px;
-	max-width: 400px;
-	margin: 5% auto;
-	padding: 30px 0;
-	background: #D9D9D9;
-	border-radius: 15px;
+#card {
+    width: 380px;
+    max-width: 90%;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    transform: translateY(0);
 }
 
-#logo{
-	width: 150px;
-	height: 150px;
-	margin: 40px auto;
-	margin-top: 0px;
-	display: block;
+#card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 
-input{
-	display: block;
-	margin: 25px auto;
-	background: #FFFFFF;
-	opacity: 0.6;
-	box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
-	border-radius: 10px;
-	border: none;
-	width:60%;
-	height: 40px;
-	padding-left: 8px;
-	font-size: 16pt;
+#logo {
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 25px;
+    display: block;
+    transition: transform 0.3s ease;
 }
 
-#btnLogin{
-	display: block;
-	margin: 25px auto;
-	margin-top: 40px;
-	box-sizing: border-box;
-	background: #000000;
-	opacity: 0.6;
-	box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
-	border-radius: 10px;
-	color: white;
-	font-size: 20pt;
-	font-weight: bold;
-	width: 60%;
-	height: 4%;
-	border:none;
+#logo:hover {
+    transform: scale(1.05);
 }
 
-hr{
-	width: 50%;
-	height: 2px;
+.input-group {
+    position: relative;
+    margin-bottom: 25px;
 }
 
-#google-signin-button{
-	display: inline-block;
-	margin: 25px auto;
-	background-color: #D9D9D9;
-	margin-left: 28%;
+input[type="text"], 
+input[type="password"] {
+    display: block;
+    width: 100%;
+    padding: 15px 15px 15px 45px;
+    margin: 15px 0;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-bottom: 2px solid #184a7e;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+input[type="text"]:focus, 
+input[type="password"]:focus {
+    border-bottom: 2px solid #3498db;
+    outline: none;
+    box-shadow: 0 5px 15px rgba(52, 152, 219, 0.2);
+}
+
+.input-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #184a7e;
+    font-size: 18px;
+}
+
+#btnLogin {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin: 30px 0 20px;
+    background: linear-gradient(135deg, #184a7e 0%, #3498db 100%);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 15px rgba(24, 74, 126, 0.3);
+}
+
+#btnLogin:hover {
+    background: linear-gradient(135deg, #3498db 0%, #184a7e 100%);
+    box-shadow: 0 10px 20px rgba(24, 74, 126, 0.4);
+    transform: translateY(-2px);
+}
+
+#btnLogin:active {
+    transform: translateY(1px);
+    box-shadow: 0 5px 10px rgba(24, 74, 126, 0.2);
+}
+
+.alert-danger {
+    border-radius: 8px;
+    padding: 15px;
+    animation: fadeIn 0.5s ease;
+}
+
+hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, #184a7e, transparent);
+    margin: 25px 0;
+}
+
+.app-title {
+    text-align: center;
+    font-size: 24px;
+    color: #184a7e;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media screen and (max-width: 480px) {
+    #card {
+        padding: 30px 20px;
+    }
+    
+    #logo {
+        width: 80px;
+        height: 80px;
+    }
+    
+    input[type="text"], 
+    input[type="password"] {
+        font-size: 14px;
+        padding: 12px 12px 12px 40px;
+    }
+    
+    #btnLogin {
+        font-size: 16px;
+        padding: 12px;
+    }
 }
 
 @media screen and (max-width: 850px) {
-	#card{
-		width: 90%;
-		min-width: unset;
-		padding: 15px 0;
-	}
-	input, #btnLogin {
-		width: 90% !important;
-		font-size: 1em;
-	}
-	#logo {
-		width: 100px;
-		height: 100px;
-	}
-	#google-signin-button{
-		margin-left: 17%;
-	}
+    #card {
+        width: 90%;
+        min-width: unset;
+        padding: 15px 0;
+    }
+    input, #btnLogin {
+        width: 90% !important;
+        font-size: 1em;
+    }
+    #logo {
+        width: 100px;
+        height: 100px;
+    }
+    #google-signin-button {
+        margin-left: 17%;
+    }
 }
 
 .bold {

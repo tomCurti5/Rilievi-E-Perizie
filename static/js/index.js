@@ -60,9 +60,19 @@ function documentReady() {
 
   // Logout
   $("#btnLogout").on("click", function () {
-    localStorage.removeItem("authToken");
-    sessionStorage.removeItem("authToken");
-    window.location.href = "/login.html";
+    Swal.fire({
+        title: 'Sei sicuro di voler uscire?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sì, esci',
+        cancelButtonText: 'Annulla'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem("authToken");
+            sessionStorage.removeItem("authToken");
+            window.location.href = "/login.html";
+        }
+    });
   });
   /**** carousel management *****/
   $(".carousel-control-prev").on("click", function () {
