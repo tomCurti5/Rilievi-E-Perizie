@@ -28,7 +28,7 @@ function popolaMappa(perizie) {
 
   // Mostra popup "Ufficio" al click sul marker della sede centrale
   const sedeElement = sedeMarker.getElement();
-  sedeElement.style.cursor = "pointer"; // <-- aggiungi questa riga
+  sedeElement.style.cursor = "pointer";
   sedeElement.addEventListener("click", () => {
     new maplibregl.Popup()
       .setLngLat([sedeCentrale.longitude, sedeCentrale.latitude])
@@ -45,19 +45,15 @@ function popolaMappa(perizie) {
     const markerElement = marker.getElement();
     markerElement.style.cursor = "pointer";
 
-
     // Aggiungi evento click sul marker
     markerElement.addEventListener("click", () => {
         const id = perizia._id.$oid || perizia._id; // Recupera l'ID della perizia
-        console.log("ID perizia:", id); // Log per debug
-        const url = `../dettagli.html?id=${id}`; // Aggiorna il percorso in base alla posizione di dettagli.html
-        console.log("URL generato:", url); // Log per debug
+        console.log("ID perizia:", id);
+        const url = `../dettagli.html?id=${id}`;
+        console.log("URL generato:", url);
         window.location.href = url; // Reindirizza alla pagina dei dettagli
     });
   }
-
-  // Alla fine della funzione aggiungi:
-  setTimeout(aggiungiEffettiMarker, 500); // Per assicurarsi che tutti i marker siano caricati
 }
 
 function disegnaPercorso(perizia, map) {

@@ -569,31 +569,6 @@ iconify-icon {
 
 /* MIGLIORAMENTI AVANZATI userArea.css */
 
-/* EFFETTI SPECIALI PER MARKER SULLA MAPPA */
-/* Questo stile seleziona i marker di MapLibre */
-.maplibregl-marker {
-  transition: all 0.3s ease !important;
-  transform-origin: bottom center !important;
-}
-
-/* Effetto hover ingrandimento */
-.maplibregl-marker:hover {
-  transform: scale(1.4) !important;
-  filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5)) !important;
-  z-index: 10 !important;
-}
-
-/* Animazione pulse per marker */
-@keyframes pulse {
-  0% { opacity: 0.7; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.2); }
-  100% { opacity: 0.7; transform: scale(1); }
-}
-
-.pulse-marker {
-  animation: pulse 2s infinite ease-in-out;
-}
-
 /* MIGLIORAMENTI ESTETICI GENERALI */
 
 /* Scrollbar personalizzata */
