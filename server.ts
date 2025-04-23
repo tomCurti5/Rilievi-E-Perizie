@@ -25,6 +25,7 @@ const connectionString = "mongodb+srv://admin:admin@cluster0.nls05.mongodb.net/"
 
 cloudinary.v2.config(JSON.parse(process.env.CLOUDINARYCONFIG as string));
 const whiteList = [
+  "https://rilievi-e-perizie-mpo0.onrender.com/",
   "http://localhost:3000",
   "https://localhost:3001",
   "https://192.168.1.70:3001",

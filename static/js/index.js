@@ -144,46 +144,51 @@ function documentReady() {
     });
 }
 
-// Funzione per popolare la tendina degli operatori
+// Funzione per creare il dropdown degli operatori con più stile
 function popolaDropdownOperatori(operatori, perizie) {
   const dropdown = $("#operatorDropdown");
-  const filterButton = $("#btnFilter"); // Bottone principale del filtro
-  dropdown.empty(); // Svuota la tendina
-
-  // Aggiungi l'opzione "Tutti"
-  const allOption = $("<a>")
-    .addClass("dropdown-item")
-    .text("Tutti")
-    .css("cursor", "pointer") // Imposta il cursore come pointer
-    .on("click", function () {
-      filterButton.text("Employee Filter"); // Ripristina il testo del bottone
-      popolaMappa(perizie); // Mostra tutte le perizie sulla mappa
-      popolaTabella(perizie, operatori); // Mostra tutte le perizie nella tabella
-    });
-  dropdown.append(allOption);
-
-  // Aggiungi un'opzione per ogni operatore (escludendo "Admin")
-  for (const operatore of operatori) {
-    if (operatore.username === "Admin") continue; // Salta l'operatore Admin
-
-    const operatoreNome = operatore.username.replace(/([a-z])([A-Z])/g, "$1 $2"); // Separa nome e cognome
-    const option = $("<a>")
-      .addClass("dropdown-item")
-      .text(operatoreNome)
-      .css("cursor", "pointer") // Imposta il cursore come pointer
-      .on("click", function () {
-        // Cambia il testo del bottone con il nome dell'operatore selezionato
-        filterButton.text(operatoreNome);
-
-        // Filtra le perizie per l'operatore selezionato
-        const perizieFiltrate = perizie.filter(perizia => perizia.codOperatore === operatore._id.$oid || perizia.codOperatore === operatore._id);
-
-        // Aggiorna la mappa e la tabella con le perizie filtrate
-        popolaMappa(perizieFiltrate);
-        popolaTabella(perizieFiltrate, operatori);
-      });
-    dropdown.append(option);
-  }
+  dropdown.empty();
+  
+  // Aggiungi l'opzione "Tutti gli operatori"
+  dropdown.append(`<a class="dropdown-item" data-id="tutti" href="#">Tutti gli operatori <span class="operator-count">${perizie.length}</span></a>`);
+  
+  // Conta le perizie per ogni operatore
+  const periziePerOperatore = {};
+  perizie.forEach(perizia => {
+    const idOperatore = perizia.idOperatore.$oid || perizia.idOperatore;
+    periziePerOperatore[idOperatore] = (periziePerOperatore[idOperatore] || 0) + 1;
+  });
+  
+  // Aggiungi gli operatori al dropdown
+  operatori.forEach(operatore => {
+    const id = operatore._id.$oid || operatore._id;
+    const nome = operatore.nome;
+    const numPerizie = periziePerOperatore[id] || 0;
+    
+    dropdown.append(`<a class="dropdown-item" data-id="${id}" href="#">${nome} <span class="operator-count">${numPerizie}</span></a>`);
+  });
+  
+  // Aggiungi effetto ripple ai click
+  $(".dropdown-item").on("click", function(e) {
+    // Crea l'elemento ripple
+    const ripple = $("<span class='ripple'></span>");
+    const rippleContainer = $(this);
+    
+    // Posizione del click relativa all'elemento
+    const posX = e.pageX - rippleContainer.offset().left;
+    const posY = e.pageY - rippleContainer.offset().top;
+    
+    // Posiziona l'effetto ripple
+    ripple.css({
+      top: posY + "px",
+      left: posX + "px"
+    }).appendTo(rippleContainer);
+    
+    // Rimuovi l'effetto dopo l'animazione
+    setTimeout(() => {
+      ripple.remove();
+    }, 600);
+  });
 }
 
 function popolaPerizia(perizia) {
