@@ -1,38 +1,25 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
 // import
-const http_1 = __importDefault(require("http"));
-const https_1 = __importDefault(require("https"));
-const fs_1 = __importDefault(require("fs"));
-const express_1 = __importDefault(require("express")); // @types/express
-const dotenv_1 = __importDefault(require("dotenv"));
-const mongodb_1 = require("mongodb");
-const cors_1 = __importDefault(require("cors")); // @types/cors
-const express_fileupload_1 = __importDefault(require("express-fileupload"));
-const cloudinary_1 = __importDefault(require("cloudinary"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const nodemailer_1 = __importDefault(require("nodemailer"));
+import http from "http";
+import https from "https";
+import fs from "fs";
+import express from "express"; // @types/express
+import dotenv from "dotenv";
+import { MongoClient, ObjectId } from "mongodb";
+import cors from "cors"; // @types/cors
+import fileUpload from "express-fileupload";
+import cloudinary from "cloudinary";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
 // config
-const app = (0, express_1.default)();
+const app = express();
 const HTTP_PORT = process.env.PORT || 3000;
-dotenv_1.default.config({ path: ".env" });
+dotenv.config({ path: ".env" });
 /* ********************** Mongo config ********************** */
 const dbName = "RilieviPerizie";
 const connectionString = "mongodb+srv://admin:admin@cluster0.nls05.mongodb.net/";
-cloudinary_1.default.v2.config(JSON.parse(process.env.CLOUDINARYCONFIG));
+cloudinary.v2.config(JSON.parse(process.env.CLOUDINARYCONFIG));
 const whiteList = [
     "http://localhost:3000",
     "https://localhost:3001",
@@ -47,24 +34,24 @@ const corsOptions = {
     credentials: true,
 };
 const HTTPS_PORT = process.env.HTTPS_PORT || 3001;
-const privateKey = fs_1.default.readFileSync("keys/privateKey.pem", "utf8");
+const privateKey = fs.readFileSync("keys/privateKey.pem", "utf8");
 console.log("Private Key:", privateKey ? "Caricata correttamente" : "Errore nel caricamento");
-const certificate = fs_1.default.readFileSync("keys/certificate.crt", "utf8");
+const certificate = fs.readFileSync("keys/certificate.crt", "utf8");
 const credentials = { key: privateKey, cert: certificate };
 const DURATA_TOKEN = 3600;
 // ***************************** Avvio ****************************************
-const httpServer = http_1.default.createServer(app);
+const httpServer = http.createServer(app);
 httpServer.listen(HTTP_PORT, function () {
     init();
     console.log("Server HTTP in ascolto sulla porta " + HTTP_PORT);
 });
-let httpsServer = https_1.default.createServer(credentials, app);
+let httpsServer = https.createServer(credentials, app);
 httpsServer.listen(HTTPS_PORT, function () {
     console.log("Server in ascolto sulle porte HTTP:" + HTTP_PORT + ", HTTPS:" + HTTPS_PORT);
 });
 let paginaErrore = "";
 function init() {
-    fs_1.default.readFile("./static/error.html", function (err, data) {
+    fs.readFile("./static/error.html", function (err, data) {
         if (!err)
             paginaErrore = data.toString();
         else
@@ -78,12 +65,12 @@ app.use("/", function (req, res, next) {
     next();
 });
 // Static
-app.use("/", express_1.default.static("./static"));
+app.use("/", express.static("./static"));
 // 3 - lettura dei parametri post
-app.use("/", express_1.default.json({ limit: "20mb" }));
-app.use("/", express_1.default.urlencoded({ extended: true, limit: "20mb" }));
+app.use("/", express.json({ limit: "20mb" }));
+app.use("/", express.urlencoded({ extended: true, limit: "20mb" }));
 // 4 - binary upload
-app.use("/", (0, express_fileupload_1.default)({
+app.use("/", fileUpload({
     limits: { fileSize: 20 * 1024 * 1024 }, // 20*1024*1024 // 20 M
 }));
 // 5 - log dei parametri
@@ -95,10 +82,10 @@ app.use("/", function (req, res, next) {
     next();
 });
 // 6. cors
-app.use("/", (0, cors_1.default)(corsOptions));
+app.use("/", cors(corsOptions));
 // 7. gestione login
 app.post("/api/login", function (req, res, next) {
-    let connection = new mongodb_1.MongoClient(connectionString);
+    let connection = new MongoClient(connectionString);
     connection
         .connect()
         .then((client) => {
@@ -148,12 +135,12 @@ app.post("/api/login", function (req, res, next) {
 function createToken(user) {
     const now = Math.floor(Date.now() / 1000); // Data attuale in secondi
     const payload = {
-        iat: now,
-        exp: now + DURATA_TOKEN,
-        _id: user._id.toString(),
+        iat: now, // Tempo di emissione
+        exp: now + DURATA_TOKEN, // Tempo di scadenza
+        _id: user._id.toString(), // Converti ObjectId in stringa
         email: user.email,
     };
-    const token = jsonwebtoken_1.default.sign(payload, privateKey);
+    const token = jwt.sign(payload, privateKey);
     console.log("Creato nuovo token:", token);
     return token;
 }
@@ -161,13 +148,13 @@ function createToken(user) {
 app.post("/api/googleLogin", function (req, res, next) {
     let googleToken = req.body.token;
     const googlePublicKey = "YOUR_GOOGLE_PUBLIC_KEY"; // Sostituisci con la chiave pubblica di Google
-    jsonwebtoken_1.default.verify(googleToken, googlePublicKey, (err, googleData) => {
+    jwt.verify(googleToken, googlePublicKey, (err, googleData) => {
         if (err) {
             res.status(401).send("Token Google non valido");
         }
         else {
             console.log("Dati Google decodificati:", googleData);
-            let connection = new mongodb_1.MongoClient(connectionString);
+            let connection = new MongoClient(connectionString);
             connection
                 .connect()
                 .then((client) => {
@@ -216,7 +203,7 @@ app.use("/api", function (req, res, next) {
     }
     else {
         const token = authHeader.split(" ")[1];
-        jsonwebtoken_1.default.verify(token, privateKey, (err, payload) => {
+        jwt.verify(token, privateKey, (err, payload) => {
             if (err) {
                 console.log("Errore nella verifica del token:", err.message);
                 res.status(403).send("Token scaduto o corrotto");
@@ -234,7 +221,7 @@ app.use("/api", function (req, res, next) {
 });
 // 10. Apertura della connessione
 app.use("/api/", function (req, res, next) {
-    let connection = new mongodb_1.MongoClient(connectionString);
+    let connection = new MongoClient(connectionString);
     connection
         .connect()
         .then((client) => {
@@ -270,7 +257,7 @@ app.get("/api/perizie", (req, res, next) => {
 app.get("/api/perizie/:id", (req, res, next) => {
     const id = req.params.id;
     const collection = req["connessione"].db(dbName).collection("perizie");
-    collection.findOne({ _id: new mongodb_1.ObjectId(id) }, (err, data) => {
+    collection.findOne({ _id: new ObjectId(id) }, (err, data) => {
         if (err) {
             res.status(500).send("Errore esecuzione query");
         }
@@ -299,7 +286,7 @@ app.get("/api/perizieUtente", (req, res, next) => {
     });
 });
 app.get("/api/operatore", (req, res, next) => {
-    let _id = new mongodb_1.ObjectId(req.query._id);
+    let _id = new ObjectId(req.query._id);
     let collection = req["connessione"].db(dbName).collection("operatori");
     collection.find({ _id: _id }).toArray((err, data) => {
         if (err) {
@@ -315,7 +302,7 @@ app.get("/api/operatore", (req, res, next) => {
 app.post("/api/aggiornaPerizia", (req, res, next) => {
     let descrizione = req.body.descrizione;
     let foto = req.body.foto;
-    let _id = new mongodb_1.ObjectId(req.body.id);
+    let _id = new ObjectId(req.body.id);
     let collection = req["connessione"].db(dbName).collection("perizie");
     collection.updateOne({ _id: _id }, { $set: { descrizione: descrizione, foto: JSON.parse(foto) } }, (err, data) => {
         if (err) {
@@ -344,8 +331,8 @@ app.get("/api/operatori", (req, res, next) => {
 app.post("/api/employ", (req, res, next) => {
     let nome = req.body.name;
     let mail = req.body.mail;
-    bcryptjs_1.default.genSalt(10, function (err, salt) {
-        bcryptjs_1.default.hash("password", salt, function (err, hash) {
+    bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash("password", salt, function (err, hash) {
             let record = {
                 password: hash,
                 nome: nome,
@@ -370,7 +357,7 @@ app.post("/api/employ", (req, res, next) => {
 app.get("/api/operatore1", (req, res, next) => {
     let collection = req["connessione"].db(dbName).collection("operatori");
     console.log(req["payload"]._id);
-    let _id = new mongodb_1.ObjectId(req["payload"]._id);
+    let _id = new ObjectId(req["payload"]._id);
     collection.find({ _id }).toArray((err, data) => {
         if (err) {
             res.status(500);
@@ -385,9 +372,9 @@ app.get("/api/operatore1", (req, res, next) => {
 app.post("/api/updatePwd", (req, res, next) => {
     let collection = req["connessione"].db(dbName).collection("operatori");
     console.log(req["payload"]._id);
-    let _id = new mongodb_1.ObjectId(req["payload"]._id);
-    bcryptjs_1.default.genSalt(10, function (err, salt) {
-        bcryptjs_1.default.hash(req.body.pwd, salt, function (err, hash) {
+    let _id = new ObjectId(req["payload"]._id);
+    bcrypt.genSalt(10, function (err, salt) {
+        bcrypt.hash(req.body.pwd, salt, function (err, hash) {
             collection.updateOne({ _id }, { $set: { password: hash } }, (err, data) => {
                 if (err) {
                     res.status(500);
@@ -402,14 +389,14 @@ app.post("/api/updatePwd", (req, res, next) => {
     });
 });
 app.post("/api/updateOperatore", (req, res, next) => {
-    cloudinary_1.default.v2.uploader
+    cloudinary.v2.uploader
         .upload(req.body.img, { folder: "assicurazioni" })
         .then((result) => {
         let collection = req["connessione"].db(dbName).collection("operatori");
         console.log(req["payload"]._id);
-        let _id = new mongodb_1.ObjectId(req["payload"]._id);
-        bcryptjs_1.default.genSalt(10, function (err, salt) {
-            bcryptjs_1.default.hash(req.body.pwd, salt, function (err, hash) {
+        let _id = new ObjectId(req["payload"]._id);
+        bcrypt.genSalt(10, function (err, salt) {
+            bcrypt.hash(req.body.pwd, salt, function (err, hash) {
                 collection.updateOne({ _id }, {
                     $set: {
                         nome: req.body.name.toString(),
@@ -435,7 +422,7 @@ app.post("/api/updateOperatore", (req, res, next) => {
     });
 });
 app.post("/api/newPhoto", (req, res, next) => {
-    cloudinary_1.default.v2.uploader
+    cloudinary.v2.uploader
         .upload(req.body.img, { folder: "assicurazioni" })
         .then((result) => {
         res.send({ path: result.secure_url });
@@ -460,7 +447,7 @@ app.post("/api/newReport", (req, res, next) => {
         req["connessione"].close();
     });
 });
-app.post("/api/nuovoOperatore", (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+app.post("/api/nuovoOperatore", async (req, res, next) => {
     try {
         const { name, email } = req.body;
         if (!name || !email) {
@@ -469,7 +456,7 @@ app.post("/api/nuovoOperatore", (req, res, next) => __awaiter(void 0, void 0, vo
         }
         const collection = req["connessione"].db(dbName).collection("operatori");
         // Controlla se esiste già un operatore con lo stesso nome
-        const operatoreEsistente = yield collection.findOne({ username: name });
+        const operatoreEsistente = await collection.findOne({ username: name });
         if (operatoreEsistente) {
             res.status(409).send("Esiste già un operatore con questo nome.");
             return;
@@ -484,23 +471,23 @@ app.post("/api/nuovoOperatore", (req, res, next) => __awaiter(void 0, void 0, vo
             img: "https://www.w3schools.com/howto/img_avatar.png",
         };
         // Inserisci il nuovo operatore nel database
-        yield collection.insertOne(nuovoOperatore);
+        await collection.insertOne(nuovoOperatore);
         // Configura Nodemailer per inviare l'email
-        const transporter = nodemailer_1.default.createTransport({
-            service: "gmail",
+        const transporter = nodemailer.createTransport({
+            service: "gmail", // Puoi usare altri servizi come Outlook, Yahoo, ecc.
             auth: {
-                user: process.env.EMAIL_USER,
+                user: process.env.EMAIL_USER, // Email del mittente (configurata in .env)
                 pass: process.env.EMAIL_PASS, // Password dell'email del mittente
             },
         });
         const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
+            from: process.env.EMAIL_USER, // Mittente
+            to: email, // Destinatario
             subject: "Benvenuto! Ecco la tua password iniziale",
             text: `Ciao ${name},\n\nLa tua password iniziale è: ${password}\nTi consigliamo di cambiarla al primo accesso.\n\nGrazie!`,
         };
         // Invia l'email
-        yield transporter.sendMail(mailOptions);
+        await transporter.sendMail(mailOptions);
         res.status(201).send("Operatore creato con successo. La password è stata inviata via email.");
     }
     catch (err) {
@@ -510,7 +497,7 @@ app.post("/api/nuovoOperatore", (req, res, next) => __awaiter(void 0, void 0, vo
     finally {
         req["connessione"].close();
     }
-}));
+});
 /* ********************** (Sezione 4) DEFAULT ROUTE  ************************* */
 // Default route
 app.use("/", function (req, res, next) {
