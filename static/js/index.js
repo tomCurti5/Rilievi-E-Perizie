@@ -21,6 +21,22 @@ $(document).ready(function () {
     document.body.appendChild(script);
   });
 
+  // Aggiungilo qui
+  $("#btnLogout").on("click", function () {
+    Swal.fire({
+        title: 'Sei sicuro di voler uscire?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Sì, esci',
+        cancelButtonText: 'Annulla'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            localStorage.removeItem("authToken");
+            sessionStorage.removeItem("authToken");
+            window.location.href = "login.html"; // Rimuovi lo slash iniziale
+        }
+    });
+  });
 });
 
 function documentReady() {
