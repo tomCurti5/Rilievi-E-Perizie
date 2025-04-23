@@ -55,6 +55,9 @@ function popolaMappa(perizie) {
         window.location.href = url; // Reindirizza alla pagina dei dettagli
     });
   }
+
+  // Alla fine della funzione aggiungi:
+  setTimeout(aggiungiEffettiMarker, 500); // Per assicurarsi che tutti i marker siano caricati
 }
 
 function disegnaPercorso(perizia, map) {
@@ -141,6 +144,31 @@ function calcolaDistanza(coord1, coord2) {
 
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c; // Distanza in km
+}
+
+function aggiungiEffettiMarker() {
+  // Seleziona tutti i marker nella mappa
+  const markers = document.querySelectorAll('.maplibregl-marker');
+  
+  // Aggiungi eventi per hover
+  markers.forEach((marker, index) => {
+    // Aggiungi classe pulse animation al marker principale (sede)
+    if (index === 0) {
+      marker.classList.add('pulse-marker');
+    }
+    
+    // Aggiungi tooltip dati
+    marker.setAttribute('data-tooltip', index === 0 ? 'Sede centrale' : 'Perizia');
+    
+    // Evento hover per migliorare l'interattività
+    marker.addEventListener('mouseenter', function() {
+      this.style.zIndex = '10';
+    });
+    
+    marker.addEventListener('mouseleave', function() {
+      this.style.zIndex = '1';
+    });
+  });
 }
 
 

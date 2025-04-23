@@ -55,11 +55,66 @@ body {
   width: 100%;
   min-width: 0;
   font-size: 16px;
+  height: auto;
+  box-shadow: none;
 }
 
 #formNewOperator input.form-control:focus {
   border-color: #3498db;
   box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+/* Correzione per le icone a sinistra del campo input */
+.input-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.input-group-prepend {
+  margin-right: 0;
+}
+
+.input-group-text {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  background-color: #f8f9fa;
+  color: #184a7e;
+  border: 2px solid #e0e0e0;
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  padding: 0 15px;
+  min-width: 46px;
+  justify-content: center;
+}
+
+.input-group .form-control {
+  border-left: none;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  flex-grow: 1;
+}
+
+/* Effetto hover sulle icone */
+.input-group:hover .input-group-text {
+  background-color: #e8f0fe;
+  color: #2980b9;
+}
+
+/* Animazione quando l'input è focalizzato */
+.input-group:focus-within .input-group-text {
+  background-color: #e8f0fe;
+  border-color: #3498db;
+  color: #2980b9;
+}
+
+/* Aumenta dimensione delle icone */
+.input-group-text i {
+  font-size: 18px;
 }
 
 /* Stile per l'input group */
