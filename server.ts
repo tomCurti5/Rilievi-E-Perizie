@@ -23,7 +23,7 @@ dotenv.config({ path: ".env" });
 const dbName = "RilieviPerizie";
 const connectionString = "mongodb+srv://admin:admin@cluster0.nls05.mongodb.net/";
 
-cloudinary.v2.config(JSON.parse(process.env.cloudinaryConfig as string));
+cloudinary.v2.config(JSON.parse(process.env.CLOUDINARYCONFIG as string));
 const whiteList = [
   "http://localhost:3000",
   "https://localhost:3001",
