@@ -7,15 +7,66 @@ body {
   /*scroll-behavior: smooth;*/
 }
 
+/* NAVBAR */
+.navbar-dark.bg-dark {
+  background: linear-gradient(135deg, #184a7e 0%, #2c3e50 100%) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  padding: 12px 20px;
+}
+
+.navbar-brand {
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+}
+
+.navbar-toggler {
+  border: none;
+  padding: 8px;
+  transition: transform 0.3s;
+}
+
+.navbar-nav .nav-link {
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.dropdown-menu {
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+#operatorDropdown {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.dropdown-item:hover {
+  cursor: pointer;
+  background-color: #f0f7ff;
+  transform: translateX(3px);
+}
+
 #map {
   width: 80%;
   height: 500px;
-  /* margin-left: 0 !important; */
-  margin: 0 auto !important;
-  border-radius: 15px 15px;
+  margin: 25px auto !important;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+#map:hover {
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
 #perizia {
@@ -194,13 +245,22 @@ iconify-icon {
 /* Migliora lo stile della tabella */
 #tableContainer {
   margin-top: 20px;
-  padding-left: 10px;
-  padding-right: 10px; /* aggiungi questa riga */
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 60vh; /* o quanto vuoi */
+  min-height: 60vh;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s;
+  width: 100%;
+}
+
+#tableContainer:hover {
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
 }
 
 #tableContainer h3 {
@@ -208,6 +268,18 @@ iconify-icon {
   color: #184a7e;
   font-weight: bold;
   margin-bottom: 15px;
+  position: relative;
+}
+
+#tableContainer h3:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: linear-gradient(to right, #184a7e, transparent);
+  border-radius: 2px;
 }
 
 .table {
@@ -217,6 +289,7 @@ iconify-icon {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   width: 100%;
   font-size: 16px;
+  margin-bottom: 0;
 }
 
 .table th {
@@ -224,11 +297,17 @@ iconify-icon {
   color: white;
   text-align: center;
   font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 1px;
+  padding: 15px 10px;
 }
 
 .table td {
   text-align: center;
   vertical-align: middle;
+  border-color: #eef2f7;
+  padding: 12px 10px;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
@@ -304,15 +383,6 @@ iconify-icon {
 
 #btnUserArea:hover {
     background-color: #0d3557; /* Colore blu scuro */
-}
-
-#operatorDropdown {
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.dropdown-item:hover {
-    cursor: pointer; /* Imposta il cursore come pointer */
 }
 
 .carousel-control-prev-icon,

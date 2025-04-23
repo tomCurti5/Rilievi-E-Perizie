@@ -1,0 +1,201 @@
+/* dettagli.css - Stili specifici per dettagli.html */
+body {
+  background-image: url("img/3408105.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Box dettagli */
+.dettagli-box {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 30px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  font-family: Arial, sans-serif;
+  color: #333;
+  transition: all 0.3s;
+}
+
+.dettagli-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+}
+
+.dettagli-box h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-align: center;
+  color: #184a7e;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.dettagli-box h1:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 3px;
+  background: linear-gradient(to right, #3498db, #184a7e);
+  border-radius: 3px;
+}
+
+.dettagli-box p {
+  font-size: 16px;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.dettagli-box h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #444;
+}
+
+/* Carosello e immagini */
+#carouselFoto {
+  margin-bottom: 25px;
+}
+
+.carousel-item img {
+  display: block;
+  margin: 0 auto;
+  border-radius: 10px;
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s;
+}
+
+.carousel-item img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-caption {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 300px;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #184a7e;
+  width: 3rem;
+  height: 3rem;
+  background-size: 70% 70%;
+  border-radius: 50%;
+}
+
+/* Contenuto editabile */
+#descrizione[contenteditable="true"] {
+  background: transparent;
+  color: inherit;
+  border: none;
+  padding: 0;
+  margin: 0;
+  min-width: 2em;
+  outline: none;
+  font-size: 1rem;
+  white-space: pre-line;
+  display: inline;
+}
+
+#descrizione[contenteditable="true"]:focus {
+  outline: 2px solid #184a7e;
+  box-shadow: 0 0 4px #184a7e;
+  background: #f0f8ff;
+  border-radius: 4px;
+}
+
+/* Bottoni */
+#btnContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 25px;
+}
+
+#btnUserArea, #btnSalvaModifiche {
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 25px;
+  border-radius: 50px;
+  margin: 8px;
+  transition: all 0.3s;
+  width: 250px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+#btnUserArea {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  border: none;
+}
+
+#btnUserArea:hover {
+  background: linear-gradient(135deg, #2980b9 0%, #1f618d 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+#btnSalvaModifiche {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+  border: none;
+}
+
+#btnSalvaModifiche:hover:not(:disabled) {
+  background: linear-gradient(135deg, #27ae60 0%, #219653 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+}
+
+#btnSalvaModifiche:disabled {
+  background-color: #ccc !important;
+  border-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+/* Media queries */
+@media (max-width: 768px) {
+  .dettagli-box {
+    width: 95%;
+    padding: 20px;
+    margin: 30px auto;
+  }
+  
+  .dettagli-box h1 {
+    font-size: 22px;
+  }
+  
+  #btnUserArea, #btnSalvaModifiche {
+    width: 100%;
+    font-size: 15px;
+    padding: 10px;
+  }
+}
