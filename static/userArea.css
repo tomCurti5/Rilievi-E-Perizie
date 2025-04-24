@@ -908,23 +908,62 @@ html, body {
   /* Aggiungi scrolling orizzontale alla tabella su schermi molto piccoli */
   #tableContainer {
     width: 98% !important;
-    padding: 10px 5px !important;
-    overflow-x: auto;
+    padding: 10px 0 !important; /* Rimuovi padding orizzontale */
+    margin: 15px auto !important;
+    overflow-x: auto; /* Permette lo scrolling orizzontale */
+    -webkit-overflow-scrolling: touch; /* Per una migliore fluidità su iOS */
   }
   
   .table {
-    min-width: 500px; /* Assicura minimo spazio per contenuto */
+    min-width: unset !important; /* Rimuovi min-width che causa problemi */
+    width: 100%;
+    font-size: 12px;
+    table-layout: auto; /* Lascia che il browser calcoli la larghezza */
   }
   
-  /* Riduci ulteriormente colonne visibili */
+  /* Nascondi colonne meno importanti */
+  .table th:nth-child(4), 
+  .table td:nth-child(4),
   .table th:nth-child(5), 
   .table td:nth-child(5) {
     display: none;
   }
   
-  .table th, .table td {
-    padding: 8px 5px;
-    font-size: 13px;
+  /* Rendi le celle più compatte */
+  .table th, 
+  .table td {
+    padding: 6px 4px;
+    word-break: break-word;
+  }
+  
+  /* Ridimensiona le celle */
+  .table th:first-child, 
+  .table td:first-child {
+    max-width: 70px; /* Limita la larghezza della prima colonna */
+  }
+  
+  /* Assicura che il wrapper contenga l'intera tabella */
+  .table-responsive {
+    width: 100%;
+    margin-bottom: 15px;
+    overflow-y: hidden;
+    border: none;
+  }
+}
+
+/* Fix specifico per iPhone 5 e simili dispositivi molto piccoli */
+@media (max-width: 320px) {
+  #tableContainer {
+    padding: 8px 0 !important;
+  }
+  
+  .table {
+    font-size: 11px;
+  }
+  
+  .table th, 
+  .table td {
+    padding: 5px 3px;
   }
 }
 
