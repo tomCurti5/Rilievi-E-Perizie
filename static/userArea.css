@@ -792,3 +792,211 @@ iconify-icon {
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
+/* MIGLIORAMENTI RESPONSIVI PER USERAREA */
+
+/* Base responsive improvements */
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Navbar responsive */
+@media (max-width: 991px) {
+  .navbar-collapse {
+    background: linear-gradient(135deg, #184a7e 0%, #2c3e50 100%);
+    border-radius: 8px;
+    margin-top: 10px;
+    padding: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  
+  .navbar-dark .navbar-toggler {
+    border: none;
+    padding: 10px;
+    margin-right: 5px;
+  }
+  
+  .navbar-nav {
+    padding: 10px 5px;
+  }
+  
+  .navbar .btn {
+    margin: 8px 0;
+    width: 100%;
+  }
+  
+  .navbar .navbar-text {
+    padding: 8px;
+    text-align: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin-top: 10px;
+  }
+}
+
+/* Mappa responsive migliorata */
+@media (max-width: 991px) {
+  #map {
+    width: 95% !important;
+    height: 400px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  #map {
+    height: 300px !important;
+    border-radius: 12px;
+  }
+}
+
+/* Dropdown migliorato per mobile */
+@media (max-width: 768px) {
+  #operatorDropdown {
+    width: 100%;
+    max-width: none;
+    position: static;
+    transform: none !important;
+  }
+  
+  .dropdown-menu.show {
+    width: 100%;
+  }
+  
+  .nav-item.dropdown {
+    position: static;
+  }
+  
+  #operatorDropdown .dropdown-item {
+    padding: 12px 15px;
+    min-height: 50px; /* Più alto per migliorare target su touch */
+  }
+  
+  .operator-count {
+    min-width: 28px;
+    height: 28px;
+    line-height: 28px;
+  }
+}
+
+/* Tabella responsive migliorata */
+@media (max-width: 768px) {
+  #tableContainer {
+    padding: 15px !important;
+    margin: 15px auto !important;
+    width: 95% !important;
+  }
+  
+  #tableContainer h3 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  /* Nascondi alcune colonne meno importanti su mobile */
+  .table th:nth-child(4), 
+  .table td:nth-child(4) {
+    display: none;
+  }
+  
+  .table th, .table td {
+    padding: 10px 8px;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Aggiungi scrolling orizzontale alla tabella su schermi molto piccoli */
+  #tableContainer {
+    width: 98% !important;
+    padding: 10px 5px !important;
+    overflow-x: auto;
+  }
+  
+  .table {
+    min-width: 500px; /* Assicura minimo spazio per contenuto */
+  }
+  
+  /* Riduci ulteriormente colonne visibili */
+  .table th:nth-child(5), 
+  .table td:nth-child(5) {
+    display: none;
+  }
+  
+  .table th, .table td {
+    padding: 8px 5px;
+    font-size: 13px;
+  }
+}
+
+/* Miglioramenti generali per dispositivi mobili */
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 20px;
+  }
+  
+  h1, h2, h3 {
+    word-break: break-word;
+  }
+  
+  .btn {
+    padding: 10px 15px;
+    font-size: 15px;
+  }
+  
+  /* Ripristina animazioni più leggere su mobile */
+  .table-striped tbody tr:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Fix per dispositivi molto piccoli */
+@media (max-width: 360px) {
+  .btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  
+  #tableContainer h3 {
+    font-size: 18px;
+  }
+  
+  #map {
+    height: 250px !important;
+  }
+}
+
+/* Fix per Chrome mobile e safari */
+@media (max-width: 991px) {
+  .table-striped tbody tr {
+    will-change: transform;
+  }
+  
+  #map {
+    will-change: transform;
+  }
+  
+  .dropdown-menu {
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Assicura che i bottoni siano facilmente clickabili su mobile */
+@media (max-width: 768px) {
+  .btn, 
+  .dropdown-item, 
+  .navbar-toggler,
+  .table td {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+  
+  /* Aumenta spazio tra elementi interattivi */
+  .btn + .btn {
+    margin-left: 10px;
+  }
+  
+  .table-striped tbody tr {
+    padding: 10px 0;
+  }
+}
+
