@@ -28,6 +28,10 @@ const whiteList = [
   "https://rilievi-e-perizie-mpo0.onrender.com/",
   "http://localhost:3000",
   "https://localhost:3001",
+  "http://localhost:8100",         // Ionic dev server
+  "capacitor://localhost",         // App Capacitor
+  "ionic://localhost",             // App Ionic
+  "http://localhost",              // Generici
   "https://192.168.1.70:3001",
   "https://10.88.205.125:3001",
   "https://cordovaapp",
@@ -213,6 +217,86 @@ app.post(
           });
       }
     });
+  }
+);
+
+// API per login operatori (app mobile)
+app.post(
+  "/api/operatorLogin",
+  function (req: Request, res: Response, next: NextFunction) {
+    let connection = new MongoClient(connectionString as string);
+    connection
+      .connect()
+      .then((client: MongoClient) => {
+        const collection = client.db(dbName).collection("operatori");
+        let regex = new RegExp(`^${req.body.email}$`, "i");
+        
+        collection
+          .findOne({ email: regex })
+          .then((dbUser: any) => {
+            if (!dbUser) {
+              // Verifica se l'email potrebbe essere nello username invece che nel campo email
+              return collection.findOne({ username: regex });
+            }
+            return dbUser;
+          })
+          .then((dbUser: any) => {
+            if (!dbUser) {
+              res.status(401); 
+              res.send("Operatore non trovato");
+            } else {
+              // Verifica della password (supporta sia password in chiaro che hash)
+              const passwordMatch = dbUser.password === req.body.password || 
+                (bcrypt.compareSync(req.body.password, dbUser.password));
+              
+              if (!passwordMatch) {
+                res.status(401);
+                res.send("Password errata");
+              } else {
+                // Crea token con TTL esteso per l'app mobile
+                const now = Math.floor(Date.now() / 1000);
+                const payload = {
+                  iat: now,
+                  exp: now + (DURATA_TOKEN * 24 * 7), // Token valido per 7 giorni
+                  _id: dbUser._id.toString(),
+                  email: dbUser.email || dbUser.username, // Supporta entrambi i campi
+                  nome: dbUser.nome || dbUser.username,
+                  role: "operator"
+                };
+                
+                const token = jwt.sign(payload, privateKey);
+                
+                // Prepara dati utente per l'app
+                const userData = {
+                  id: dbUser._id,
+                  nome: dbUser.nome || dbUser.username,
+                  email: dbUser.email || dbUser.username,
+                  img: dbUser.img || dbUser['"img"'] || "https://www.w3schools.com/howto/img_avatar.png"
+                };
+                
+                res.setHeader("Authorization", `Bearer ${token}`);
+                res.setHeader("access-control-expose-headers", "Authorization");
+                res.send({ 
+                  ris: "ok",
+                  token: token, // Includi token anche nel body per client mobile
+                  userData: userData
+                });
+              }
+            }
+          })
+          .catch((err: Error) => {
+            res.status(500);
+            res.send("Query error " + err.message);
+            console.log(err.stack);
+          })
+          .finally(() => {
+            client.close();
+          });
+      })
+      .catch((err: Error) => {
+        res.status(503);
+        res.send("Database service unavailable");
+      });
   }
 );
 
