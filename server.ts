@@ -521,6 +521,155 @@ app.post("/api/nuovoOperatore", asyncHandler(async (req: any, res: Response, nex
   }
 }));
 
+// Elimina un operatore dal database
+app.delete("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const operatoreId = req.params.id;
+    
+    // Verifica che sia l'admin a fare la richiesta
+    const payload = req["payload"];
+    if (!payload || payload.email !== "admin@azienda.com") {
+      return res.status(403).send("Solo l'amministratore può eliminare operatori");
+    }
+
+    // Impedisci l'eliminazione dell'admin stesso
+    const collection = req["connessione"].db(dbName).collection("operatori");
+    const operatore = await collection.findOne({ _id: new ObjectId(operatoreId) });
+    
+    if (!operatore) {
+      return res.status(404).send("Operatore non trovato");
+    }
+    
+    if (operatore.email === "admin@azienda.com") {
+      return res.status(403).send("Non è possibile eliminare l'account amministratore");
+    }
+
+    // Verifica se l'operatore ha perizie associate
+    const perizieCollection = req["connessione"].db(dbName).collection("perizie");
+    const perizie = await perizieCollection.countDocuments({ codOperatore: operatoreId });
+    
+    if (perizie > 0) {
+      return res.status(409).send(`Impossibile eliminare l'operatore: ha ${perizie} perizie associate`);
+    }
+
+    // Elimina l'operatore
+    const risultato = await collection.deleteOne({ _id: new ObjectId(operatoreId) });
+    
+    if (risultato.deletedCount === 0) {
+      return res.status(404).send("Operatore non trovato");
+    }
+    
+    res.status(200).send({
+      success: true,
+      message: "Operatore eliminato con successo"
+    });
+  } catch (error) {
+    console.error("Errore durante l'eliminazione dell'operatore:", error);
+    res.status(500).send("Errore durante l'eliminazione dell'operatore");
+  } finally {
+    req["connessione"].close();
+  }
+}));
+
+// Modifica dati di un operatore
+app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const operatoreId = req.params.id;
+    const { username, email, password, resetPassword } = req.body;
+    
+    // Verifica che sia l'admin a fare la richiesta
+    const payload = req["payload"];
+    if (!payload || payload.email !== "admin@azienda.com") {
+      return res.status(403).send("Solo l'amministratore può modificare operatori");
+    }
+
+    const collection = req["connessione"].db(dbName).collection("operatori");
+    
+    // Verifica esistenza operatore
+    const operatore = await collection.findOne({ _id: new ObjectId(operatoreId) });
+    if (!operatore) {
+      return res.status(404).send("Operatore non trovato");
+    }
+    
+    // Prepara oggetto con campi da aggiornare
+    const updateFields: any = {};
+    
+    if (username) {
+      // Verifica che il nuovo username non sia già in uso (se diverso da quello attuale)
+      if (username !== operatore.username) {
+        const usernameEsistente = await collection.findOne({ username, _id: { $ne: new ObjectId(operatoreId) } });
+        if (usernameEsistente) {
+          return res.status(409).send("Esiste già un operatore con questo username");
+        }
+        updateFields.username = username;
+      }
+    }
+    
+    if (email) {
+      // Verifica che la nuova email non sia già in uso (se diversa da quella attuale)
+      if (email !== operatore.email) {
+        const emailEsistente = await collection.findOne({ email, _id: { $ne: new ObjectId(operatoreId) } });
+        if (emailEsistente) {
+          return res.status(409).send("Esiste già un operatore con questa email");
+        }
+        updateFields.email = email;
+      }
+    }
+    
+    // Gestione password
+    if (resetPassword === true) {
+      // Generazione nuova password casuale
+      const newPassword = Math.random().toString(36).slice(-8);
+      updateFields.password = newPassword;
+      
+      // Invia email con nuova password
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+      
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email || operatore.email,
+        subject: "Aggiornamento delle credenziali",
+        text: `Ciao ${username || operatore.username},\n\nLe tue credenziali sono state aggiornate.\nLa tua nuova password è: ${newPassword}\n\nGrazie!`,
+      };
+      
+      await transporter.sendMail(mailOptions);
+    } else if (password) {
+      // Aggiorna con la password specificata
+      updateFields.password = password;
+    }
+    
+    // Aggiorna l'operatore se ci sono campi da modificare
+    if (Object.keys(updateFields).length > 0) {
+      await collection.updateOne(
+        { _id: new ObjectId(operatoreId) },
+        { $set: updateFields }
+      );
+      
+      res.status(200).send({
+        success: true,
+        message: "Operatore aggiornato con successo",
+        resetPassword: resetPassword ? true : false
+      });
+    } else {
+      res.status(200).send({
+        success: true,
+        message: "Nessuna modifica effettuata"
+      });
+    }
+  } catch (error) {
+    console.error("Errore durante la modifica dell'operatore:", error);
+    res.status(500).send("Errore durante la modifica dell'operatore");
+  } finally {
+    req["connessione"].close();
+  }
+}));
+
 // Endpoint per l'upload di una nuova perizia completa da app mobile
 app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {

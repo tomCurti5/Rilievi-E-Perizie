@@ -360,3 +360,145 @@ function popolaTabella(perizie, operatori) {
         tableBody.append(row);
     }
 }
+
+// Funzione per caricare la lista degli operatori in una tabella
+function caricaListaOperatori() {
+  inviaRichiesta("GET", "/api/operatori")
+    .done(function(operatori) {
+      const tableBody = $("#operatoriTableBody");
+      tableBody.empty();
+      
+      operatori.forEach(function(operatore) {
+        if (operatore.username === "Admin" || operatore.email === "admin@azienda.com") return;
+        
+        const row = $("<tr>");
+        row.append($("<td>").text(operatore.username));
+        row.append($("<td>").text(operatore.email));
+        row.append($("<td>").text(operatore.nPerizie || 0));
+        
+        // Aggiungi pulsanti per modificare ed eliminare
+        const actionsCell = $("<td>");
+        
+        // Pulsante modifica
+        const btnModifica = $("<button>")
+          .addClass("btn btn-sm btn-primary mr-2")
+          .html('<i class="fas fa-edit"></i>')
+          .click(function() {
+            mostraModalModifica(operatore);
+          });
+        
+        // Pulsante elimina
+        const btnElimina = $("<button>")
+          .addClass("btn btn-sm btn-danger")
+          .html('<i class="fas fa-trash"></i>')
+          .click(function() {
+            confermaEliminazione(operatore);
+          });
+        
+        actionsCell.append(btnModifica, btnElimina);
+        row.append(actionsCell);
+        
+        tableBody.append(row);
+      });
+    })
+    .fail(function(error) {
+      console.error("Errore nel caricamento degli operatori:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Errore',
+        text: 'Impossibile caricare la lista degli operatori'
+      });
+    });
+}
+
+// Funzione per mostrare la modal di modifica operatore
+function mostraModalModifica(operatore) {
+  $("#modalTitolo").text("Modifica Operatore");
+  $("#operatorModalId").val(operatore._id.$oid || operatore._id);
+  $("#operatorModalName").val(operatore.username);
+  $("#operatorModalEmail").val(operatore.email);
+  $("#operatorModalPassword").val("");
+  $("#operatorModalResetPassword").prop("checked", false);
+  
+  $("#operatorModal").modal("show");
+}
+
+// Funzione per confermare l'eliminazione di un operatore
+function confermaEliminazione(operatore) {
+  Swal.fire({
+    title: 'Sei sicuro?',
+    text: `Vuoi eliminare l'operatore "${operatore.username}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sì, elimina',
+    cancelButtonText: 'Annulla'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      eliminaOperatore(operatore._id.$oid || operatore._id);
+    }
+  });
+}
+
+// Funzione per eliminare un operatore
+function eliminaOperatore(id) {
+  inviaRichiesta("DELETE", `/api/operatori/${id}`)
+    .done(function(response) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Operatore eliminato',
+        text: 'L\'operatore è stato eliminato con successo'
+      });
+      caricaListaOperatori();
+    })
+    .fail(function(error) {
+      console.error("Errore nell'eliminazione dell'operatore:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Errore',
+        text: error.responseText || 'Impossibile eliminare l\'operatore'
+      });
+    });
+}
+
+// Funzione per salvare le modifiche all'operatore
+function salvaModificheOperatore() {
+  const id = $("#operatorModalId").val();
+  const username = $("#operatorModalName").val().trim();
+  const email = $("#operatorModalEmail").val().trim();
+  const password = $("#operatorModalPassword").val().trim();
+  const resetPassword = $("#operatorModalResetPassword").is(":checked");
+  
+  const dati = {
+    username: username,
+    email: email
+  };
+  
+  if (password) {
+    dati.password = password;
+  }
+  
+  if (resetPassword) {
+    dati.resetPassword = true;
+  }
+  
+  inviaRichiesta("PUT", `/api/operatori/${id}`, dati)
+    .done(function(response) {
+      $("#operatorModal").modal("hide");
+      Swal.fire({
+        icon: 'success',
+        title: 'Operatore aggiornato',
+        text: response.message
+      });
+      caricaListaOperatori();
+    })
+    .fail(function(error) {
+      console.error("Errore nell'aggiornamento dell'operatore:", error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Errore',
+        text: error.responseText || 'Impossibile aggiornare l\'operatore'
+      });
+    });
+}
