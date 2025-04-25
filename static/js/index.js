@@ -444,7 +444,7 @@ function mostraModalModifica(operatore) {
 // Funzione per salvare le modifiche all'operatore
 function salvaModificheOperatore() {
     const id = $("#operatorModalId").val();
-    const username = $("#operatorModalName").val().trim();
+    let username = $("#operatorModalName").val().trim();
     const email = $("#operatorModalEmail").val().trim();
     const password = $("#operatorModalPassword").val().trim();
     const resetPassword = $("#operatorModalResetPassword").is(":checked");
@@ -457,6 +457,8 @@ function salvaModificheOperatore() {
         });
         return;
     }
+    
+    username = formatUsername(username);
     
     const data = {
         username: username,
@@ -581,9 +583,9 @@ function validaFormNuovoOperatore() {
     }
 }
 
-// Funzione per creare un nuovo operatore
+// Modifica nella funzione creaNuovoOperatore()
 function creaNuovoOperatore() {
-    const name = $("#newOperatorName").val().trim();
+    let name = $("#newOperatorName").val().trim();
     const email = $("#newOperatorEmail").val().trim();
     
     if (!name || !email) {
@@ -594,6 +596,9 @@ function creaNuovoOperatore() {
         });
         return;
     }
+    
+    // Formatta lo username prima dell'invio
+    name = formatUsername(name);
     
     Swal.fire({
         title: 'Creazione in corso...',
@@ -635,4 +640,13 @@ function creaNuovoOperatore() {
             });
         }
     });
+}
+
+// Funzione per formattare lo username (rimuove spazi e capitalizza ogni parola)
+function formatUsername(name) {
+    // Dividi il nome per ogni spazio e capitalizza la prima lettera di ogni parola
+    return name.split(' ')
+        .filter(word => word.trim() !== '') // Rimuove parole vuote
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(''); // Unisce tutto senza spazi
 }
