@@ -15,6 +15,18 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
 
+// Add this type definition at the top of your file
+interface Foto {
+  url: string;
+  commento: string;
+  timestamp: Date;
+}
+
+// Aggiungi questo helper all'inizio del tuo file, prima delle route
+const asyncHandler = (fn: any) => (req: any, res: any, next: any) => {
+  return Promise.resolve(fn(req, res, next)).catch(next);
+};
+
 // config
 const app = express();
 const HTTP_PORT = process.env.PORT || 3000;
@@ -450,142 +462,7 @@ app.get("/api/operatori", (req: any, res: Response, next: NextFunction) => {
   });
 });
 
-app.post("/api/employ", (req: any, res: Response, next: NextFunction) => {
-  let nome = req.body.name;
-  let mail = req.body.mail;
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash("password", salt, function (err, hash) {
-      let record = {
-        password: hash,
-        nome: nome,
-        mail: mail,
-        nPerizie: "0",
-        '"img"':
-          "https://res.cloudinary.com/dfrqbcbln/image/upload/v1672932919/assicurazioni/img_avatar_e9p0bx.png",
-      };
-
-      let collection = req["connessione"].db(dbName).collection("operatori");
-      collection.insertOne(record, (err: Error, data: any) => {
-        if (err) {
-          res.status(500);
-          res.send("Errore esecuzione query");
-        } else {
-          res.send({ ris: "ok" });
-        }
-        req["connessione"].close();
-      });
-    });
-  });
-});
-
-app.get("/api/operatore1", (req: any, res: Response, next: NextFunction) => {
-  let collection = req["connessione"].db(dbName).collection("operatori");
-  console.log(req["payload"]._id);
-  let _id = new ObjectId(req["payload"]._id);
-  collection.find({ _id }).toArray((err: Error, data: any) => {
-    if (err) {
-      res.status(500);
-      res.send("Errore esecuzione query");
-    } else {
-      res.send(data);
-    }
-    req["connessione"].close();
-  });
-});
-
-app.post("/api/updatePwd", (req: any, res: Response, next: NextFunction) => {
-  let collection = req["connessione"].db(dbName).collection("operatori");
-  console.log(req["payload"]._id);
-  let _id = new ObjectId(req["payload"]._id);
-  bcrypt.genSalt(10, function (err, salt) {
-    bcrypt.hash(req.body.pwd, salt, function (err, hash) {
-      collection.updateOne(
-        { _id },
-        { $set: { password: hash } },
-        (err: Error, data: any) => {
-          if (err) {
-            res.status(500);
-            res.send("Errore esecuzione query");
-          } else {
-            res.send(data);
-          }
-          req["connessione"].close();
-        }
-      );
-    });
-  });
-});
-
-app.post(
-  "/api/updateOperatore",
-  (req: any, res: Response, next: NextFunction) => {
-    cloudinary.v2.uploader
-      .upload(req.body.img, { folder: "assicurazioni" })
-      .then((result: UploadApiResponse) => {
-        let collection = req["connessione"].db(dbName).collection("operatori");
-        console.log(req["payload"]._id);
-        let _id = new ObjectId(req["payload"]._id);
-        bcrypt.genSalt(10, function (err, salt) {
-          bcrypt.hash(req.body.pwd, salt, function (err, hash) {
-            collection.updateOne(
-              { _id },
-              {
-                $set: {
-                  nome: req.body.name.toString(),
-                  email: req.body.mail,
-                  '"img"': result.secure_url,
-                },
-              },
-              (err: Error, data: any) => {
-                if (err) {
-                  res.status(500);
-                  res.send("Errore esecuzione query");
-                } else {
-                  res.send(data);
-                }
-                req["connessione"].close();
-              }
-            );
-          });
-        });
-      })
-      .catch((err: any) => {
-        res.status(500);
-        res.send("Error upload file to Cloudinary. Error: " + err.message);
-      });
-  }
-);
-
-app.post("/api/newPhoto", (req: any, res: Response, next: NextFunction) => {
-  cloudinary.v2.uploader
-    .upload(req.body.img, { folder: "assicurazioni" })
-    .then((result: UploadApiResponse) => {
-      res.send({ path: result.secure_url });
-    })
-    .catch((err: any) => {
-      res.status(500);
-      res.send("Error upload file to Cloudinary. Error: " + err.message);
-    });
-});
-
-app.post("/api/newReport", (req: any, res: Response, next: NextFunction) => {
-  let record = req.body.record;
-  record.codOperatore = req["payload"]._id;
-
-  let collection = req["connessione"].db(dbName).collection("perizie");
-
-  collection.insertOne(record, (err: Error, data: any) => {
-    if (err) {
-      res.status(500);
-      res.send("Errore esecuzione query");
-    } else {
-      res.send({ ris: "ok" });
-    }
-    req["connessione"].close();
-  });
-});
-
-app.post("/api/nuovoOperatore", async (req: any, res: Response, next: NextFunction) => {
+app.post("/api/nuovoOperatore", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
     const { name, email } = req.body;
 
@@ -642,7 +519,144 @@ app.post("/api/nuovoOperatore", async (req: any, res: Response, next: NextFuncti
   } finally {
     req["connessione"].close();
   }
-});
+}));
+
+// Endpoint per l'upload di una nuova perizia completa da app mobile
+app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const { descrizione, coordinate, foto, codOperatore } = req.body;
+    
+    // Validazione dei dati obbligatori
+    if (!descrizione || !coordinate || !coordinate.latitude || !coordinate.longitude || !codOperatore) {
+      return res.status(400).send("Dati perizia incompleti. Richiesti: descrizione, coordinate e codOperatore");
+    }
+
+    // Crea oggetto perizia
+    const nuovaPerizia = {
+      descrizione: descrizione,
+      coordinate: {
+        latitude: parseFloat(coordinate.latitude),
+        longitude: parseFloat(coordinate.longitude)
+      },
+      timestamp: new Date(),
+      codOperatore: codOperatore,
+      foto: [] as Foto[] // Type assertion for the empty array
+    };
+
+    // Gestione foto (se presenti)
+    if (foto && Array.isArray(foto) && foto.length > 0) {
+      nuovaPerizia.foto = foto.map((f: any) => {
+        return {
+          url: f.url,
+          commento: f.commento,
+          timestamp: new Date(f.timestamp || Date.now())
+        };
+      });
+    }
+
+    // Salva perizia nel database
+    const collection = req["connessione"].db(dbName).collection("perizie");
+    const result = await collection.insertOne(nuovaPerizia);
+    
+    // Incrementa contatore perizie dell'operatore
+    const operatoriCollection = req["connessione"].db(dbName).collection("operatori");
+    await operatoriCollection.updateOne(
+      { _id: new ObjectId(codOperatore) },
+      { $inc: { nPerizie: 1 } }
+    );
+
+    // Risposta di successo
+    res.status(201).send({
+      success: true,
+      message: "Perizia salvata con successo",
+      periziaId: result.insertedId,
+      numFoto: nuovaPerizia.foto.length
+    });
+  } 
+  catch (error) {
+    console.error("Errore durante il salvataggio della perizia:", error);
+    res.status(500).send("Errore durante il salvataggio della perizia");
+  }
+  finally {
+    req["connessione"].close();
+  }
+}));
+
+// Endpoint per l'upload di una singola foto da aggiungere a una perizia esistente
+app.post("/api/perizie/:id/foto", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
+  try {
+    const periziaId = req.params.id;
+    const { url, commento } = req.body;
+    
+    if (!url || !commento) {
+      return res.status(400).send("URL e commento sono obbligatori");
+    }
+    
+    // Crea oggetto foto
+    const nuovaFoto = {
+      url: url,
+      commento: commento,
+      timestamp: new Date()
+    };
+    
+    // Aggiunge la foto alla perizia
+    const collection = req["connessione"].db(dbName).collection("perizie");
+    await collection.updateOne(
+      { _id: new ObjectId(periziaId) },
+      { $push: { foto: nuovaFoto } }
+    );
+    
+    res.status(201).send({
+      success: true,
+      message: "Foto aggiunta con successo"
+    });
+  } 
+  catch (error) {
+    console.error("Errore durante l'aggiunta della foto:", error);
+    res.status(500).send("Errore durante l'aggiunta della foto");
+  }
+  finally {
+    req["connessione"].close();
+  }
+}));
+
+// Helper per upload diretto su Cloudinary dall'app mobile
+app.post("/api/uploadImage", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
+  try {
+    if (!req.files || !req.files.image) {
+      return res.status(400).send("Nessuna immagine caricata");
+    }
+    
+    const imageFile = req.files.image as UploadedFile;
+    
+    // Carica immagine su Cloudinary
+    const uploadResult = await new Promise<UploadApiResponse>((resolve, reject) => {
+      cloudinary.v2.uploader.upload_stream(
+        {
+          folder: "perizie",
+          resource_type: "image",
+          transformation: [
+            { width: 1200, height: 1200, crop: "limit" } // Limita dimensioni
+          ]
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result as UploadApiResponse);
+        }
+      ).end(imageFile.data);
+    });
+    
+    res.send({
+      success: true,
+      url: uploadResult.secure_url,
+      publicId: uploadResult.public_id
+    });
+  } 
+  catch (error) {
+    console.error("Errore durante l'upload dell'immagine:", error);
+    res.status(500).send("Errore durante l'upload dell'immagine");
+  }
+}));
 
 /* ********************** (Sezione 4) DEFAULT ROUTE  ************************* */
 // Default route

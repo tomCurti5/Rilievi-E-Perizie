@@ -64,16 +64,6 @@ function documentReady() {
     $("#lblSuccess").hide();
   });
 
-  $("#btnEmploy").on("click", function () {
-    let name = $("#newNameEmployer").val();
-    let mail = $("#newMailEmployer").val();
-    let request = inviaRichiesta("POST", "/api/employ", { mail, name });
-    request.fail(errore);
-    request.done(function (data) {
-      $("#lblSuccess").show();
-    });
-  });
-
   // Logout
   $("#btnLogout").on("click", function () {
     Swal.fire({
