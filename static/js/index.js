@@ -39,18 +39,11 @@ $(document).ready(function () {
   });
 
   // Verifica se l'utente è admin per mostrare il pulsante di gestione operatori
-  const token = localStorage.getItem("token");
-  if (token) {
-      const payload = parseJwt(token);
-      if (payload && payload.email === "admin@azienda.com") {
-          $("#btnGestioneOperatori").show();
-      } else {
-          $("#btnGestioneOperatori").hide();
-      }
-  }
 
   // Event listener per il pulsante di gestione operatori
-  $("#btnGestioneOperatori").on("click", mostraGestioneOperatori);
+  $("#btnGestioneOperatori").on("click", function(){
+    mostraGestioneOperatori();
+  });
 });
 
 function documentReady() {
