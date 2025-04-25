@@ -548,18 +548,31 @@ function eliminaOperatore(id) {
     });
 }
 
-// Funzione per mostrare la sezione di gestione operatori
+// Modifica la funzione per nascondere il filtro quando vai in gestione operatori
 function mostraGestioneOperatori() {
     $("#home").hide();
     $("#perizia").hide();
     $("#operatoriSection").show();
+    
+    // Disabilita il filtro operatori nella navbar
+    $("#btnFilter").parent().addClass("disabled");
+    $("#btnFilter").attr("aria-disabled", "true");
+    $("#btnFilter").css("pointer-events", "none");
+    $("#btnFilter").css("opacity", "0.5");
+    
     caricaListaOperatori();
 }
 
-// Funzione per tornare alla pagina principale
+// Modifica la funzione per riabilitare il filtro quando torni alla home
 function tornaPaginaPrincipale() {
     $("#operatoriSection").hide();
     $("#home").show();
+    
+    // Riabilita il filtro operatori nella navbar
+    $("#btnFilter").parent().removeClass("disabled");
+    $("#btnFilter").removeAttr("aria-disabled");
+    $("#btnFilter").css("pointer-events", "auto");
+    $("#btnFilter").css("opacity", "1");
 }
 
 // Funzione per mostrare la modal di nuovo operatore
