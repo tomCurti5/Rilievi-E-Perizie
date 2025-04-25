@@ -602,31 +602,37 @@ function creaNuovoOperatore() {
         didOpen: () => {
             Swal.showLoading();
             
-            inviaRichiesta("POST", "/api/nuovoOperatore", { name, email })
-                .then(function(response) {
+            // Usa fetch invece di inviaRichiesta per questo caso specifico
+            const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
+            
+            fetch("/api/nuovoOperatore", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ name, email })
+            })
+            .then(response => {
+                if (response.ok || response.status === 201) {
                     $("#newOperatorModal").modal("hide");
                     Swal.fire({
                         icon: 'success',
                         title: 'Operatore creato',
                         text: 'Operatore creato con successo. La password è stata inviata via email.'
                     });
-                    caricaListaOperatori(); // Ricarica la tabella operatori
-                })
-                .catch(function(err) {
-                    let messaggio = 'Si è verificato un errore durante la creazione dell\'operatore';
-                    
-                    if (err.status === 409) {
-                        messaggio = 'Esiste già un operatore con questo nome.';
-                    } else if (err.responseText) {
-                        messaggio = err.responseText;
-                    }
-                    
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Errore',
-                        text: messaggio
-                    });
+                    caricaListaOperatori();
+                } else {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Errore',
+                    text: error.message || 'Si è verificato un errore durante la creazione dell\'operatore'
                 });
+            });
         }
     });
 }
