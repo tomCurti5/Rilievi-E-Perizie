@@ -127,6 +127,45 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal per modifica operatore -->
+    <div class="modal fade" id="operatorModal" tabindex="-1" role="dialog" aria-labelledby="modalTitolo" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitolo">Modifica Operatore</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="formModificaOperatore">
+                        <input type="hidden" id="operatorModalId">
+                        <div class="form-group">
+                            <label for="operatorModalName">Nome Operatore</label>
+                            <input type="text" class="form-control" id="operatorModalName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="operatorModalEmail">Email</label>
+                            <input type="email" class="form-control" id="operatorModalEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="operatorModalPassword">Nuova Password (lascia vuoto per non modificare)</label>
+                            <input type="password" class="form-control" id="operatorModalPassword">
+                        </div>
+                        <div class="form-group form-check">
+                            <input type="checkbox" class="form-check-input" id="operatorModalResetPassword">
+                            <label class="form-check-label" for="operatorModalResetPassword">Genera e invia nuova password casuale</label>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annulla</button>
+                    <button type="button" class="btn btn-primary" onclick="salvaModificheOperatore()">Salva</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>
