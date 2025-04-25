@@ -44,6 +44,12 @@ $(document).ready(function () {
   $("#btnGestioneOperatori").on("click", function(){
     mostraGestioneOperatori();
   });
+
+  // Validazione form nuovo operatore
+  $("#newOperatorName, #newOperatorEmail").on("input", validaFormNuovoOperatore);
+    
+  // Inizializza il bottone come disabilitato
+  $("#btnCreaOperatore").prop("disabled", true);
 });
 
 function documentReady() {
@@ -552,4 +558,75 @@ function mostraGestioneOperatori() {
 function tornaPaginaPrincipale() {
     $("#operatoriSection").hide();
     $("#home").show();
+}
+
+// Funzione per mostrare la modal di nuovo operatore
+function mostraModalNuovoOperatore() {
+    // Resetta il form
+    $("#formNuovoOperatore")[0].reset();
+    // Mostra la modal
+    $("#newOperatorModal").modal("show");
+}
+
+// Funzione per validare e abilitare/disabilitare il pulsante di creazione
+function validaFormNuovoOperatore() {
+    const name = $("#newOperatorName").val().trim();
+    const email = $("#newOperatorEmail").val().trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    
+    if (name && email && emailRegex.test(email)) {
+        $("#btnCreaOperatore").prop("disabled", false);
+    } else {
+        $("#btnCreaOperatore").prop("disabled", true);
+    }
+}
+
+// Funzione per creare un nuovo operatore
+function creaNuovoOperatore() {
+    const name = $("#newOperatorName").val().trim();
+    const email = $("#newOperatorEmail").val().trim();
+    
+    if (!name || !email) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Dati mancanti',
+            text: 'Nome e email sono obbligatori'
+        });
+        return;
+    }
+    
+    Swal.fire({
+        title: 'Creazione in corso...',
+        text: 'Attendere prego',
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading();
+            
+            inviaRichiesta("POST", "/api/nuovoOperatore", { name, email })
+                .then(function(response) {
+                    $("#newOperatorModal").modal("hide");
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Operatore creato',
+                        text: 'Operatore creato con successo. La password è stata inviata via email.'
+                    });
+                    caricaListaOperatori(); // Ricarica la tabella operatori
+                })
+                .catch(function(err) {
+                    let messaggio = 'Si è verificato un errore durante la creazione dell\'operatore';
+                    
+                    if (err.status === 409) {
+                        messaggio = 'Esiste già un operatore con questo nome.';
+                    } else if (err.responseText) {
+                        messaggio = err.responseText;
+                    }
+                    
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Errore',
+                        text: messaggio
+                    });
+                });
+        }
+    });
 }

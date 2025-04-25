@@ -1039,3 +1039,41 @@ html, body {
   }
 }
 
+/* Stili per la modal del nuovo operatore */
+#newOperatorModal .input-group-text {
+  background-color: #f8f9fa;
+  color: #184a7e;
+  border: 2px solid #e0e0e0;
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 8px;
+  border-bottom-left-radius: 8px;
+  padding: 0 15px;
+  min-width: 46px;
+  justify-content: center;
+}
+
+#newOperatorModal .form-control {
+  border: 2px solid #e0e0e0;
+  border-left: none;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  border-radius: 8px;
+  padding: 12px 15px;
+  transition: all 0.3s;
+  background-color: white;
+  color: #333 !important;
+}
+
+#newOperatorModal .form-control:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+}
+
+#newOperatorModal .input-group:focus-within .input-group-text {
+  background-color: #e8f0fe;
+  border-color: #3498db;
+  color: #2980b9;
+}
+
