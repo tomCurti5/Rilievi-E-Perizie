@@ -170,7 +170,7 @@ function popolaDropdownOperatori(operatori, perizie) {
       // Aggiungi effetto ripple
       addRippleEffect(e, this);
       
-      filterButton.text("Employee Filter");
+      filterButton.text("Filtra per operatore");
       popolaMappa(perizie);
       popolaTabella(perizie, operatori);
     });
