@@ -17,9 +17,8 @@ import nodemailer from "nodemailer";
 
 // Add this type definition at the top of your file
 interface Foto {
-  url: string;
+  img: string;
   commento: string;
-  timestamp: Date;
 }
 
 // Aggiungi questo helper all'inizio del tuo file, prima delle route
@@ -683,7 +682,7 @@ app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next:
     // Crea oggetto perizia
     const nuovaPerizia = {
       codOperatore: codOperatore,
-      "data-ora": new Date().toString(),
+      "data-ora": new Date().toISOString(),
       descrizione: descrizione,
       coordinate: {
         latitude: parseFloat(coordinate.latitude),
@@ -696,9 +695,8 @@ app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next:
     if (foto && Array.isArray(foto) && foto.length > 0) {
       nuovaPerizia.foto = foto.map((f: any) => {
         return {
-          url: f.url,
-          commento: f.commento,
-          timestamp: new Date(f.timestamp || Date.now())
+          img: f.img,
+          commento: f.commento
         };
       });
     }
