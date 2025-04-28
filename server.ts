@@ -241,14 +241,14 @@ app.post(
       .connect()
       .then((client: MongoClient) => {
         const collection = client.db(dbName).collection("operatori");
-        let regex = new RegExp(`^${req.body.email}$`, "i");
+        let regex = new RegExp(`^${req.body.username}$`, "i"); // Changed from req.body.email to req.body.username
         
         collection
-          .findOne({ email: regex })
+          .findOne({ username: regex }) // Primary search by username
           .then((dbUser: any) => {
             if (!dbUser) {
-              // Verifica se l'email potrebbe essere nello username invece che nel campo email
-              return collection.findOne({ username: regex });
+              // Fallback to email if username not found
+              return collection.findOne({ email: regex });
             }
             return dbUser;
           })
@@ -271,9 +271,9 @@ app.post(
                   iat: now,
                   exp: now + (DURATA_TOKEN * 24 * 7), // Token valido per 7 giorni
                   _id: dbUser._id.toString(),
-                  email: dbUser.email || dbUser.username, // Supporta entrambi i campi
+                  email: dbUser.email || dbUser.username,
                   nome: dbUser.nome || dbUser.username,
-                  role: "operator"
+                  role: dbUser.role || "operator"
                 };
                 
                 const token = jwt.sign(payload, privateKey);
@@ -286,11 +286,22 @@ app.post(
                   img: dbUser.img || dbUser['"img"'] || "https://www.w3schools.com/howto/img_avatar.png"
                 };
                 
+                // Determina la redirect URL basata sul ruolo
+                let redirect;
+                if (dbUser.role === "admin") {
+                  redirect = "/dashboard.html"; // Admin
+                } else if (dbUser.cambiaPassword) {
+                  redirect = "/cambia-password.html"; // Deve cambiare password
+                } else {
+                  redirect = "/dashboard-utente.html"; // Operatore normale
+                }
+                
                 res.setHeader("Authorization", `Bearer ${token}`);
                 res.setHeader("access-control-expose-headers", "Authorization");
                 res.send({ 
                   ris: "ok",
-                  token: token, // Includi token anche nel body per client mobile
+                  token: token,
+                  redirect: redirect, // Aggiunto campo redirect richiesto dal frontend
                   userData: userData
                 });
               }
@@ -311,7 +322,6 @@ app.post(
       });
   }
 );
-
 // 8. gestione Logout
 
 // 9. Controllo del Token
