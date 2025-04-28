@@ -808,39 +808,30 @@ app.post("/api/uploadImage", asyncHandler(async (req: any, res: Response, next: 
 // Endpoint per cambiare la password (app mobile)
 app.post("/api/changePassword", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
-    const { oldPassword, newPassword } = req.body;
+    const { newPassword, operatoreId } = req.body;
     const payload = req["payload"];
     
     // Validazione input
-    if (!oldPassword || !newPassword) {
-      return res.status(400).send("Vecchia password e nuova password sono obbligatorie");
+    if (!newPassword) {
+      return res.status(400).send("La nuova password è obbligatoria");
     }
     
     if (newPassword.length < 6) {
       return res.status(400).send("La nuova password deve essere di almeno 6 caratteri");
     }
     
-    // Ottieni utente dal database
-    const collection = req["connessione"].db(dbName).collection("operatori");
-    const operatore = await collection.findOne({ _id: new ObjectId(payload._id) });
-    
-    if (!operatore) {
-      return res.status(404).send("Operatore non trovato");
-    }
-    
-    // Verifica vecchia password (supporta sia password in chiaro che hash)
-    const passwordMatch = operatore.password === oldPassword || 
-      (bcrypt.compareSync(oldPassword, operatore.password));
-    
-    if (!passwordMatch) {
-      return res.status(401).send("La vecchia password non è corretta");
-    }
+    const targetOperatoreId = operatoreId || payload._id;
     
     // Aggiorna password
-    await collection.updateOne(
-      { _id: new ObjectId(payload._id) },
+    const collection = req["connessione"].db(dbName).collection("operatori");
+    const result = await collection.updateOne(
+      { _id: new ObjectId(targetOperatoreId) },
       { $set: { password: newPassword } }
     );
+    
+    if (result.matchedCount === 0) {
+      return res.status(404).send("Operatore non trovato");
+    }
     
     res.status(200).send({
       success: true,
