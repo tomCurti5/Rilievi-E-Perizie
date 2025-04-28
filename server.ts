@@ -682,13 +682,13 @@ app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next:
 
     // Crea oggetto perizia
     const nuovaPerizia = {
+      codOperatore: codOperatore,
+      "data-ora": new Date().toString(),
       descrizione: descrizione,
       coordinate: {
         latitude: parseFloat(coordinate.latitude),
         longitude: parseFloat(coordinate.longitude)
       },
-      timestamp: new Date(),
-      codOperatore: codOperatore,
       foto: [] as Foto[] // Type assertion for the empty array
     };
 
