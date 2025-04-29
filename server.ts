@@ -241,7 +241,7 @@ app.post(
       .then((client: MongoClient) => {
         const collection = client.db(dbName).collection("operatori");
         let regex = new RegExp(`^${req.body.email}$`, "i");
-        
+
         collection
           .findOne({ email: regex })
           .then((dbUser: any) => {
@@ -253,13 +253,13 @@ app.post(
           })
           .then((dbUser: any) => {
             if (!dbUser) {
-              res.status(401); 
+              res.status(401);
               res.send("Operatore non trovato");
             } else {
               // Verifica della password (supporta sia password in chiaro che hash)
-              const passwordMatch = dbUser.password === req.body.password || 
+              const passwordMatch = dbUser.password === req.body.password ||
                 (bcrypt.compareSync(req.body.password, dbUser.password));
-              
+
               if (!passwordMatch) {
                 res.status(401);
                 res.send("Password errata");
@@ -274,9 +274,9 @@ app.post(
                   nome: dbUser.nome || dbUser.username,
                   role: "operator"
                 };
-                
+
                 const token = jwt.sign(payload, privateKey);
-                
+
                 // Prepara dati utente per l'app
                 const userData = {
                   id: dbUser._id,
@@ -284,10 +284,10 @@ app.post(
                   email: dbUser.email || dbUser.username,
                   img: dbUser.img || dbUser['"img"'] || "https://www.w3schools.com/howto/img_avatar.png"
                 };
-                
+
                 res.setHeader("Authorization", `Bearer ${token}`);
                 res.setHeader("access-control-expose-headers", "Authorization");
-                res.send({ 
+                res.send({
                   ris: "ok",
                   token: token, // Includi token anche nel body per client mobile
                   userData: userData
@@ -524,7 +524,7 @@ app.post("/api/nuovoOperatore", asyncHandler(async (req: any, res: Response, nex
 app.delete("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
     const operatoreId = req.params.id;
-    
+
     // Verifica che sia l'admin a fare la richiesta
     const payload = req["payload"];
     if (!payload || payload.email !== "admin@azienda.com") {
@@ -534,11 +534,11 @@ app.delete("/api/operatori/:id", asyncHandler(async (req: any, res: Response, ne
     // Impedisci l'eliminazione dell'admin stesso
     const collection = req["connessione"].db(dbName).collection("operatori");
     const operatore = await collection.findOne({ _id: new ObjectId(operatoreId) });
-    
+
     if (!operatore) {
       return res.status(404).send("Operatore non trovato");
     }
-    
+
     if (operatore.email === "admin@azienda.com") {
       return res.status(403).send("Non è possibile eliminare l'account amministratore");
     }
@@ -546,18 +546,18 @@ app.delete("/api/operatori/:id", asyncHandler(async (req: any, res: Response, ne
     // Verifica se l'operatore ha perizie associate
     const perizieCollection = req["connessione"].db(dbName).collection("perizie");
     const perizie = await perizieCollection.countDocuments({ codOperatore: operatoreId });
-    
+
     if (perizie > 0) {
       return res.status(409).send(`Impossibile eliminare l'operatore: ha ${perizie} perizie associate`);
     }
 
     // Elimina l'operatore
     const risultato = await collection.deleteOne({ _id: new ObjectId(operatoreId) });
-    
+
     if (risultato.deletedCount === 0) {
       return res.status(404).send("Operatore non trovato");
     }
-    
+
     res.status(200).send({
       success: true,
       message: "Operatore eliminato con successo"
@@ -575,7 +575,7 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
   try {
     const operatoreId = req.params.id;
     const { username, email, password, resetPassword } = req.body;
-    
+
     // Verifica che sia l'admin a fare la richiesta
     const payload = req["payload"];
     if (!payload || payload.email !== "admin@azienda.com") {
@@ -583,16 +583,16 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
     }
 
     const collection = req["connessione"].db(dbName).collection("operatori");
-    
+
     // Verifica esistenza operatore
     const operatore = await collection.findOne({ _id: new ObjectId(operatoreId) });
     if (!operatore) {
       return res.status(404).send("Operatore non trovato");
     }
-    
+
     // Prepara oggetto con campi da aggiornare
     const updateFields: any = {};
-    
+
     if (username) {
       // Verifica che il nuovo username non sia già in uso (se diverso da quello attuale)
       if (username !== operatore.username) {
@@ -603,7 +603,7 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
         updateFields.username = username;
       }
     }
-    
+
     if (email) {
       // Verifica che la nuova email non sia già in uso (se diversa da quella attuale)
       if (email !== operatore.email) {
@@ -614,13 +614,13 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
         updateFields.email = email;
       }
     }
-    
+
     // Gestione password
     if (resetPassword === true) {
       // Generazione nuova password casuale
       const newPassword = Math.random().toString(36).slice(-8);
       updateFields.password = newPassword;
-      
+
       // Invia email con nuova password
       const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -629,27 +629,27 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
           pass: process.env.EMAIL_PASS,
         },
       });
-      
+
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email || operatore.email,
         subject: "Aggiornamento delle credenziali",
         text: `Ciao ${username || operatore.username},\n\nLe tue credenziali sono state aggiornate.\nLa tua nuova password è: ${newPassword}\n\nGrazie!`,
       };
-      
+
       await transporter.sendMail(mailOptions);
     } else if (password) {
       // Aggiorna con la password specificata
       updateFields.password = password;
     }
-    
+
     // Aggiorna l'operatore se ci sono campi da modificare
     if (Object.keys(updateFields).length > 0) {
       await collection.updateOne(
         { _id: new ObjectId(operatoreId) },
         { $set: updateFields }
       );
-      
+
       res.status(200).send({
         success: true,
         message: "Operatore aggiornato con successo",
@@ -673,7 +673,7 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
 app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
     const { descrizione, coordinate, foto, codOperatore } = req.body;
-    
+
     // Validazione dei dati obbligatori
     if (!descrizione || !coordinate || !coordinate.latitude || !coordinate.longitude || !codOperatore) {
       return res.status(400).send("Dati perizia incompleti. Richiesti: descrizione, coordinate e codOperatore");
@@ -704,7 +704,7 @@ app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next:
     // Salva perizia nel database
     const collection = req["connessione"].db(dbName).collection("perizie");
     const result = await collection.insertOne(nuovaPerizia);
-    
+
     // Incrementa contatore perizie dell'operatore
     const operatoriCollection = req["connessione"].db(dbName).collection("operatori");
     await operatoriCollection.updateOne(
@@ -719,7 +719,7 @@ app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next:
       periziaId: result.insertedId,
       numFoto: nuovaPerizia.foto.length
     });
-  } 
+  }
   catch (error) {
     console.error("Errore durante il salvataggio della perizia:", error);
     res.status(500).send("Errore durante il salvataggio della perizia");
@@ -734,30 +734,30 @@ app.post("/api/perizie/:id/foto", asyncHandler(async (req: any, res: Response, n
   try {
     const periziaId = req.params.id;
     const { url, commento } = req.body;
-    
+
     if (!url || !commento) {
       return res.status(400).send("URL e commento sono obbligatori");
     }
-    
+
     // Crea oggetto foto
     const nuovaFoto = {
       url: url,
       commento: commento,
       timestamp: new Date()
     };
-    
+
     // Aggiunge la foto alla perizia
     const collection = req["connessione"].db(dbName).collection("perizie");
     await collection.updateOne(
       { _id: new ObjectId(periziaId) },
       { $push: { foto: nuovaFoto } }
     );
-    
+
     res.status(201).send({
       success: true,
       message: "Foto aggiunta con successo"
     });
-  } 
+  }
   catch (error) {
     console.error("Errore durante l'aggiunta della foto:", error);
     res.status(500).send("Errore durante l'aggiunta della foto");
@@ -773,9 +773,9 @@ app.post("/api/uploadImage", asyncHandler(async (req: any, res: Response, next: 
     if (!req.files || !req.files.image) {
       return res.status(400).send("Nessuna immagine caricata");
     }
-    
+
     const imageFile = req.files.image as UploadedFile;
-    
+
     // Carica immagine su Cloudinary
     const uploadResult = await new Promise<UploadApiResponse>((resolve, reject) => {
       cloudinary.v2.uploader.upload_stream(
@@ -792,13 +792,13 @@ app.post("/api/uploadImage", asyncHandler(async (req: any, res: Response, next: 
         }
       ).end(imageFile.data);
     });
-    
+
     res.send({
       success: true,
       url: uploadResult.secure_url,
       publicId: uploadResult.public_id
     });
-  } 
+  }
   catch (error) {
     console.error("Errore durante l'upload dell'immagine:", error);
     res.status(500).send("Errore durante l'upload dell'immagine");
@@ -808,36 +808,52 @@ app.post("/api/uploadImage", asyncHandler(async (req: any, res: Response, next: 
 // Endpoint per cambiare la password (app mobile)
 app.post("/api/changePassword", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
-    const { newPassword, operatoreId } = req.body;
+    const { currentPassword, newPassword, operatoreId } = req.body;
     const payload = req["payload"];
-    
+
     // Validazione input
     if (!newPassword) {
       return res.status(400).send("La nuova password è obbligatoria");
     }
-    
+
     if (newPassword.length < 6) {
       return res.status(400).send("La nuova password deve essere di almeno 6 caratteri");
     }
-    
+
     const targetOperatoreId = operatoreId || payload._id;
-    
-    // Aggiorna password
+
+    // Verifica se l'operatore esiste e controlla la password attuale
     const collection = req["connessione"].db(dbName).collection("operatori");
+    const operatore = await collection.findOne({ _id: new ObjectId(targetOperatoreId) });
+
+    if (!operatore) {
+      return res.status(404).send("Operatore non trovato");
+    }
+
+    // Se non è l'admin che modifica un altro utente, verifica la password attuale
+
+    if (!currentPassword) {
+      return res.status(400).send("La password attuale è obbligatoria");
+    }
+
+    // Verifica password attuale (supporta sia password in chiaro che hash)
+    const passwordMatch = operatore.password === currentPassword
+
+    if (!passwordMatch) {
+      return res.status(401).send("La password attuale non è corretta");
+    }
+
+    // Aggiorna password
     const result = await collection.updateOne(
       { _id: new ObjectId(targetOperatoreId) },
       { $set: { password: newPassword } }
     );
-    
-    if (result.matchedCount === 0) {
-      return res.status(404).send("Operatore non trovato");
-    }
-    
+
     res.status(200).send({
       success: true,
       message: "Password aggiornata con successo"
     });
-  } 
+  }
   catch (error) {
     console.error("Errore durante il cambio password:", error);
     res.status(500).send("Errore durante il cambio password");
