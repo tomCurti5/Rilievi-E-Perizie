@@ -136,6 +136,48 @@ $(document).ready(function () {
             alert("Errore nel salvataggio delle modifiche.");
         });
     });
+
+    // Gestisci il click sul pulsante Elimina perizia
+    $("#btnEliminaPerizia").on("click", function () {
+        // Chiedi conferma prima di eliminare
+        Swal.fire({
+            title: 'Sei sicuro?',
+            text: "L'eliminazione della perizia è irreversibile!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sì, elimina',
+            cancelButtonText: 'Annulla'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Effettua la richiesta di eliminazione
+                inviaRichiesta("DELETE", `/api/perizie/${idPerizia}`)
+                    .done(function (response) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Perizia eliminata!',
+                            text: 'La perizia è stata eliminata con successo.',
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        
+                        // Reindirizza alla userArea dopo un breve ritardo
+                        setTimeout(() => {
+                            window.location.href = "userArea.html";
+                        }, 1600);
+                    })
+                    .fail(function (err) {
+                        console.error("Errore nell'eliminazione della perizia:", err);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Errore',
+                            text: 'Impossibile eliminare la perizia.',
+                        });
+                    });
+            }
+        });
+    });
 });
 
 // Funzione per ottenere l'indirizzo dalle coordinate
