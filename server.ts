@@ -463,16 +463,22 @@ app.get("/api/operatori", (req: any, res: Response, next: NextFunction) => {
 
 app.post("/api/nuovoOperatore", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
-    const { name, email } = req.body;
+    let { name, email } = req.body;
 
     if (!name || !email) {
       res.status(400).send("Nome ed email sono obbligatori.");
       return;
     }
 
+    // Formatta lo username sul server (stessa logica del client)
+    name = name.split(' ')
+      .filter((word: string) => word.trim() !== '')
+      .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join('');
+
     const collection = req["connessione"].db(dbName).collection("operatori");
 
-    // Controlla se esiste già un operatore con lo stesso nome
+    // Controlla se esiste già un operatore con lo stesso nome FORMATTATO
     const operatoreEsistente = await collection.findOne({ username: name });
     if (operatoreEsistente) {
       res.status(409).send("Esiste già un operatore con questo nome.");
@@ -482,15 +488,12 @@ app.post("/api/nuovoOperatore", asyncHandler(async (req: any, res: Response, nex
     // Genera una password casuale
     const password = Math.random().toString(36).slice(-8);
     const nuovoOperatore = {
-      username: name,
+      username: name,  // nome già formattato
       email: email,
       password: password,
       nPerizie: 0,
       img: "https://www.w3schools.com/howto/img_avatar.png",
     };
-
-    // Inserisci il nuovo operatore nel database
-    await collection.insertOne(nuovoOperatore);
 
     // Configura Nodemailer per inviare l'email
     const transporter = nodemailer.createTransport({
@@ -510,6 +513,9 @@ app.post("/api/nuovoOperatore", asyncHandler(async (req: any, res: Response, nex
 
     // Invia l'email
     await transporter.sendMail(mailOptions);
+
+    // Inserisci il nuovo operatore nel database
+    await collection.insertOne(nuovoOperatore);
 
     res.status(201).send("Operatore creato con successo. La password è stata inviata via email.");
   } catch (err) {
