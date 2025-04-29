@@ -9,7 +9,6 @@ let commenti = {
 };
 
 $(document).ready(function () {
-  // creazione dinamica del CDN di accesso alle google maps
   let request = inviaRichiesta("GET", "/api/MAP_KEY");
   request.fail(errore);
   request.done(function (key) {
@@ -21,7 +20,6 @@ $(document).ready(function () {
     document.body.appendChild(script);
   });
 
-  // Aggiungilo qui
   $("#btnLogout").on("click", function () {
     Swal.fire({
         title: 'Sei sicuro di voler uscire?',
@@ -33,22 +31,17 @@ $(document).ready(function () {
         if (result.isConfirmed) {
             localStorage.removeItem("authToken");
             sessionStorage.removeItem("authToken");
-            window.location.href = "login.html"; // Rimuovi lo slash iniziale
+            window.location.href = "login.html";
         }
     });
   });
 
-  // Verifica se l'utente è admin per mostrare il pulsante di gestione operatori
-
-  // Event listener per il pulsante di gestione operatori
   $("#btnGestioneOperatori").on("click", function(){
     mostraGestioneOperatori();
   });
 
-  // Validazione form nuovo operatore
   $("#newOperatorName, #newOperatorEmail").on("input", validaFormNuovoOperatore);
     
-  // Inizializza il bottone come disabilitato
   $("#btnCreaOperatore").prop("disabled", true);
 });
 
@@ -57,7 +50,6 @@ function documentReady() {
   $("#newUser").hide();
   hideFilter();
 
-  // Recupera le perizie e gli operatori
   let perizieRequest = inviaRichiesta("GET", "/api/perizie");
   let operatoriRequest = inviaRichiesta("GET", "/api/operatori");
 
@@ -65,9 +57,9 @@ function documentReady() {
     const perizie = perizieResponse[0];
     const operatori = operatoriResponse[0];
 
-    popolaMappa(perizie); // Popola la mappa
-    popolaTabella(perizie, operatori); // Popola la tabella con i nomi degli operatori
-    popolaDropdownOperatori(operatori, perizie); // Popola la tendina degli operatori
+    popolaMappa(perizie);
+    popolaTabella(perizie, operatori);
+    popolaDropdownOperatori(operatori, perizie);
   }).fail(errore);
 
   $("#btnNewUser").on("click", function () {
@@ -77,7 +69,6 @@ function documentReady() {
     $("#lblSuccess").hide();
   });
 
-  // Logout
   $("#btnLogout").on("click", function () {
     Swal.fire({
         title: 'Sei sicuro di voler uscire?',
@@ -147,27 +138,23 @@ function documentReady() {
     });
 }
 
-// Funzione per popolare la tendina degli operatori migliorata
 function popolaDropdownOperatori(operatori, perizie) {
   const dropdown = $("#operatorDropdown");
   const filterButton = $("#btnFilter");
   dropdown.empty();
 
-  // Conta perizie per operatore
   const periziePerOperatore = {};
   perizie.forEach(perizia => {
     const idOperatore = perizia.codOperatore;
     periziePerOperatore[idOperatore] = (periziePerOperatore[idOperatore] || 0) + 1;
   });
 
-  // Aggiungi l'opzione "Tutti"
   const allOption = $("<a>")
     .addClass("dropdown-item")
     .attr("data-id", "tutti")
     .html(`Tutti <span class="operator-count">${perizie.length}</span>`)
     .css("cursor", "pointer")
     .on("click", function(e) {
-      // Aggiungi effetto ripple
       addRippleEffect(e, this);
       
       filterButton.text("Filtra per operatore");
@@ -176,7 +163,6 @@ function popolaDropdownOperatori(operatori, perizie) {
     });
   dropdown.append(allOption);
 
-  // Aggiungi un'opzione per ogni operatore (escludendo "Admin")
   for (const operatore of operatori) {
     if (operatore.username === "Admin") continue;
 
@@ -190,7 +176,6 @@ function popolaDropdownOperatori(operatori, perizie) {
       .html(`${operatoreNome} <span class="operator-count">${numPerizie}</span>`)
       .css("cursor", "pointer")
       .on("click", function(e) {
-        // Aggiungi effetto ripple
         addRippleEffect(e, this);
         
         filterButton.text(operatoreNome);
@@ -204,26 +189,20 @@ function popolaDropdownOperatori(operatori, perizie) {
   }
 }
 
-// Funzione per aggiungere l'effetto ripple
 function addRippleEffect(event, element) {
-  // Rimuovi eventuali ripple esistenti
   $(element).find(".ripple").remove();
   
-  // Crea l'elemento ripple
   const ripple = $("<span class='ripple'></span>");
   const rippleContainer = $(element);
   
-  // Posizione del click relativa all'elemento
   const posX = event.pageX - rippleContainer.offset().left;
   const posY = event.pageY - rippleContainer.offset().top;
   
-  // Posiziona l'effetto ripple
   ripple.css({
     top: posY + "px",
     left: posX + "px"
   }).appendTo(rippleContainer);
   
-  // Rimuovi l'effetto dopo l'animazione
   setTimeout(() => {
     ripple.remove();
   }, 600);
@@ -328,53 +307,44 @@ function popolaOperatori(operatori) {
 
 function popolaTabella(perizie, operatori) {
     const tableBody = $("#perizieTableBody");
-    tableBody.empty(); // Svuota la tabella prima di popolarla
+    tableBody.empty();
 
     for (const perizia of perizie) {
         const row = $("<tr>");
 
-        // Trova il nome dell'operatore corrispondente al codice
         const operatore = operatori.find(op => op._id.$oid === perizia.codOperatore || op._id === perizia.codOperatore);
         let operatoreNome = operatore ? operatore.username : "N/A";
 
-        // Aggiungi uno spazio tra nome e cognome
         operatoreNome = operatoreNome.replace(/([a-z])([A-Z])/g, "$1 $2");
 
-        // Colonna Operatore
         const operatoreCell = $("<td>").text(operatoreNome);
         row.append(operatoreCell);
 
-        // Colonna Data
         const date = new Date(perizia["data-ora"]);
         const formattedDate = date.toLocaleDateString() + " " + date.toLocaleTimeString();
         const dateCell = $("<td>").text(formattedDate);
         row.append(dateCell);
 
-        // Colonna Descrizione
         const descriptionCell = $("<td>").text(perizia.descrizione || "N/A");
         row.append(descriptionCell);
 
-        // Colonna Coordinate
         const coordinates = `${perizia.coordinate.latitude}, ${perizia.coordinate.longitude}`;
         const coordinatesCell = $("<td>").text(coordinates);
         row.append(coordinatesCell);
 
-        // Colonna Commento
         const commentCell = $("<td>").text(perizia.foto && perizia.foto[0].commento ? perizia.foto[0].commento : "N/A");
         row.append(commentCell);
 
-        // Aggiungi evento onclick per reindirizzare alla pagina dei dettagli
         row.on("click", function () {
-            const id = perizia._id.$oid || perizia._id; // Recupera l'ID della perizia
-            const url = `dettagli.html?id=${id}`; // Costruisce l'URL con il parametro ID
-            window.location.href = url; // Reindirizza alla pagina dei dettagli
+            const id = perizia._id.$oid || perizia._id;
+            const url = `dettagli.html?id=${id}`;
+            window.location.href = url;
         });
 
         tableBody.append(row);
     }
 }
 
-// Funzione per caricare la lista degli operatori in una tabella
 function caricaListaOperatori() {
     $("#operatoriTableBody").html('<tr><td colspan="4" class="text-center">Caricamento...</td></tr>');
     
@@ -384,7 +354,6 @@ function caricaListaOperatori() {
             tableBody.empty();
             
             data.forEach(function(operatore) {
-                // Skip dell'admin
                 if (operatore.email === "admin@azienda.com" || operatore.username === "Admin") {
                     return;
                 }
@@ -394,10 +363,8 @@ function caricaListaOperatori() {
                 row.append($("<td>").text(operatore.email || "N/A"));
                 row.append($("<td>").text(operatore.nPerizie || 0));
                 
-                // Pulsanti azioni
                 const actionsCell = $("<td>");
                 
-                // Pulsante modifica
                 const btnModifica = $("<button>")
                     .addClass("btn btn-sm btn-primary mr-2")
                     .html('<i class="fas fa-edit"></i>')
@@ -405,7 +372,6 @@ function caricaListaOperatori() {
                         mostraModalModifica(operatore);
                     });
                 
-                // Pulsante elimina
                 const btnElimina = $("<button>")
                     .addClass("btn btn-sm btn-danger")
                     .html('<i class="fas fa-trash"></i>')
@@ -431,7 +397,6 @@ function caricaListaOperatori() {
         });
 }
 
-// Funzione per mostrare la modal di modifica
 function mostraModalModifica(operatore) {
     $("#operatorModalId").val(operatore._id.$oid || operatore._id);
     $("#operatorModalName").val(operatore.username);
@@ -441,7 +406,6 @@ function mostraModalModifica(operatore) {
     $("#operatorModal").modal("show");
 }
 
-// Funzione per salvare le modifiche all'operatore
 function salvaModificheOperatore() {
     const id = $("#operatorModalId").val();
     let username = $("#operatorModalName").val().trim();
@@ -501,7 +465,6 @@ function salvaModificheOperatore() {
     });
 }
 
-// Funzione per confermare l'eliminazione
 function confermaEliminazione(operatore) {
     Swal.fire({
         title: 'Conferma eliminazione',
@@ -519,7 +482,6 @@ function confermaEliminazione(operatore) {
     });
 }
 
-// Funzione per eliminare l'operatore
 function eliminaOperatore(id) {
     Swal.fire({
         title: 'Eliminazione in corso...',
@@ -548,13 +510,11 @@ function eliminaOperatore(id) {
     });
 }
 
-// Modifica la funzione per nascondere il filtro quando vai in gestione operatori
 function mostraGestioneOperatori() {
     $("#home").hide();
     $("#perizia").hide();
     $("#operatoriSection").show();
     
-    // Disabilita il filtro operatori nella navbar
     $("#btnFilter").parent().addClass("disabled");
     $("#btnFilter").attr("aria-disabled", "true");
     $("#btnFilter").css("pointer-events", "none");
@@ -563,27 +523,21 @@ function mostraGestioneOperatori() {
     caricaListaOperatori();
 }
 
-// Modifica la funzione per riabilitare il filtro quando torni alla home
 function tornaPaginaPrincipale() {
     $("#operatoriSection").hide();
     $("#home").show();
     
-    // Riabilita il filtro operatori nella navbar
     $("#btnFilter").parent().removeClass("disabled");
     $("#btnFilter").removeAttr("aria-disabled");
     $("#btnFilter").css("pointer-events", "auto");
     $("#btnFilter").css("opacity", "1");
 }
 
-// Funzione per mostrare la modal di nuovo operatore
 function mostraModalNuovoOperatore() {
-    // Resetta il form
     $("#formNuovoOperatore")[0].reset();
-    // Mostra la modal
     $("#newOperatorModal").modal("show");
 }
 
-// Funzione per validare e abilitare/disabilitare il pulsante di creazione
 function validaFormNuovoOperatore() {
     const name = $("#newOperatorName").val().trim();
     const email = $("#newOperatorEmail").val().trim();
@@ -596,7 +550,6 @@ function validaFormNuovoOperatore() {
     }
 }
 
-// Modifica nella funzione creaNuovoOperatore()
 function creaNuovoOperatore() {
     let name = $("#newOperatorName").val().trim();
     const email = $("#newOperatorEmail").val().trim();
@@ -610,7 +563,6 @@ function creaNuovoOperatore() {
         return;
     }
     
-    // Formatta lo username prima dell'invio
     name = formatUsername(name);
     
     Swal.fire({
@@ -620,7 +572,6 @@ function creaNuovoOperatore() {
         didOpen: () => {
             Swal.showLoading();
             
-            // Usa fetch invece di inviaRichiesta per questo caso specifico
             const token = localStorage.getItem("authToken") || sessionStorage.getItem("authToken");
             
             fetch("/api/nuovoOperatore", {
@@ -655,11 +606,9 @@ function creaNuovoOperatore() {
     });
 }
 
-// Funzione per formattare lo username (rimuove spazi e capitalizza ogni parola)
 function formatUsername(name) {
-    // Dividi il nome per ogni spazio e capitalizza la prima lettera di ogni parola
     return name.split(' ')
-        .filter(word => word.trim() !== '') // Rimuove parole vuote
+        .filter(word => word.trim() !== '')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(''); // Unisce tutto senza spazi
+        .join('');
 }

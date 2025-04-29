@@ -133,7 +133,6 @@ app.post(
               // Solo l'admin può accedere
               res.status(403).send("Solo l'amministratore può accedere a questa area.");
             } else {
-              // confronto la password in chiaro
               if (req.body.password !== dbUser.password) {
                 // password errata
                 res.status(401);
@@ -488,33 +487,30 @@ app.post("/api/nuovoOperatore", asyncHandler(async (req: any, res: Response, nex
     // Genera una password casuale
     const password = Math.random().toString(36).slice(-8);
     const nuovoOperatore = {
-      username: name,  // nome già formattato
+      username: name,
       email: email,
       password: password,
       nPerizie: 0,
       img: "https://www.w3schools.com/howto/img_avatar.png",
     };
 
-    // Configura Nodemailer per inviare l'email
     const transporter = nodemailer.createTransport({
-      service: "gmail", // Puoi usare altri servizi come Outlook, Yahoo, ecc.
+      service: "gmail",
       auth: {
-        user: process.env.EMAIL_USER, // Email del mittente (configurata in .env)
-        pass: process.env.EMAIL_PASS, // Password dell'email del mittente
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
       },
     });
 
     const mailOptions = {
-      from: process.env.EMAIL_USER, // Mittente
-      to: email, // Destinatario
+      from: process.env.EMAIL_USER,
+      to: email,
       subject: "Benvenuto! Ecco la tua password iniziale",
       text: `Ciao ${name},\n\nLa tua password iniziale è: ${password}\nTi consigliamo di cambiarla al primo accesso.\n\nGrazie!`,
     };
 
-    // Invia l'email
     await transporter.sendMail(mailOptions);
 
-    // Inserisci il nuovo operatore nel database
     await collection.insertOne(nuovoOperatore);
 
     res.status(201).send("Operatore creato con successo. La password è stata inviata via email.");
@@ -526,12 +522,10 @@ app.post("/api/nuovoOperatore", asyncHandler(async (req: any, res: Response, nex
   }
 }));
 
-// Elimina un operatore dal database
 app.delete("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
     const operatoreId = req.params.id;
 
-    // Verifica che sia l'admin a fare la richiesta
     const payload = req["payload"];
     if (!payload || payload.email !== "admin@azienda.com") {
       return res.status(403).send("Solo l'amministratore può eliminare operatori");
@@ -549,7 +543,6 @@ app.delete("/api/operatori/:id", asyncHandler(async (req: any, res: Response, ne
       return res.status(403).send("Non è possibile eliminare l'account amministratore");
     }
 
-    // Verifica se l'operatore ha perizie associate
     const perizieCollection = req["connessione"].db(dbName).collection("perizie");
     const perizie = await perizieCollection.countDocuments({ codOperatore: operatoreId });
 
@@ -557,7 +550,6 @@ app.delete("/api/operatori/:id", asyncHandler(async (req: any, res: Response, ne
       return res.status(409).send(`Impossibile eliminare l'operatore: ha ${perizie} perizie associate`);
     }
 
-    // Elimina l'operatore
     const risultato = await collection.deleteOne({ _id: new ObjectId(operatoreId) });
 
     if (risultato.deletedCount === 0) {
@@ -576,7 +568,6 @@ app.delete("/api/operatori/:id", asyncHandler(async (req: any, res: Response, ne
   }
 }));
 
-// Modifica dati di un operatore
 app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
     const operatoreId = req.params.id;
@@ -590,17 +581,14 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
 
     const collection = req["connessione"].db(dbName).collection("operatori");
 
-    // Verifica esistenza operatore
     const operatore = await collection.findOne({ _id: new ObjectId(operatoreId) });
     if (!operatore) {
       return res.status(404).send("Operatore non trovato");
     }
 
-    // Prepara oggetto con campi da aggiornare
     const updateFields: any = {};
 
     if (username) {
-      // Verifica che il nuovo username non sia già in uso (se diverso da quello attuale)
       if (username !== operatore.username) {
         const usernameEsistente = await collection.findOne({ username, _id: { $ne: new ObjectId(operatoreId) } });
         if (usernameEsistente) {
@@ -611,7 +599,6 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
     }
 
     if (email) {
-      // Verifica che la nuova email non sia già in uso (se diversa da quella attuale)
       if (email !== operatore.email) {
         const emailEsistente = await collection.findOne({ email, _id: { $ne: new ObjectId(operatoreId) } });
         if (emailEsistente) {
@@ -621,13 +608,11 @@ app.put("/api/operatori/:id", asyncHandler(async (req: any, res: Response, next:
       }
     }
 
-    // Gestione password
     if (resetPassword === true) {
       // Generazione nuova password casuale
       const newPassword = Math.random().toString(36).slice(-8);
       updateFields.password = newPassword;
 
-      // Invia email con nuova password
       const transporter = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -718,7 +703,6 @@ app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next:
       { $inc: { nPerizie: 1 } }
     );
 
-    // Risposta di successo
     res.status(201).send({
       success: true,
       message: "Perizia salvata con successo",
@@ -735,7 +719,6 @@ app.post("/api/nuovaPerizia", asyncHandler(async (req: any, res: Response, next:
   }
 }));
 
-// Endpoint per l'upload di una singola foto da aggiungere a una perizia esistente
 app.post("/api/perizie/:id/foto", asyncHandler(async (req: any, res: Response, next: NextFunction) => {
   try {
     const periziaId = req.params.id;
@@ -836,20 +819,16 @@ app.post("/api/changePassword", asyncHandler(async (req: any, res: Response, nex
       return res.status(404).send("Operatore non trovato");
     }
 
-    // Se non è l'admin che modifica un altro utente, verifica la password attuale
-
     if (!currentPassword) {
       return res.status(400).send("La password attuale è obbligatoria");
     }
 
-    // Verifica password attuale (supporta sia password in chiaro che hash)
     const passwordMatch = operatore.password === currentPassword
 
     if (!passwordMatch) {
       return res.status(401).send("La password attuale non è corretta");
     }
 
-    // Aggiorna password
     const result = await collection.updateOne(
       { _id: new ObjectId(targetOperatoreId) },
       { $set: { password: newPassword } }
